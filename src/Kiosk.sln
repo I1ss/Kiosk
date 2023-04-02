@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33424.131
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateway", "ApiGateway", "{AF475127-6126-4E86-982E-700FFF149D28}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservices", "{1924AE25-1AC8-4984-92A6-F2C920961F84}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebUI", "WebUI", "{4817AA3F-10F3-4228-B34F-C61E6DD80866}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kiosk.ApiGateway", "ApiGateway\Kiosk.ApiGateway\Kiosk.ApiGateway.csproj", "{A5E6584F-4F6A-429B-8D4D-8FF0107D7CCB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kiosk.CatalogWebApi", "Microservices\Kiosk.CatalogWebApi\Kiosk.CatalogWebApi.csproj", "{6CAAAAF2-038D-4B3D-827A-EBE683BB4E16}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kiosk.OrdersWebApi", "Microservices\Kiosk.OrdersWebApi\Kiosk.OrdersWebApi.csproj", "{FF8C1BFC-377E-41FB-BADA-C56E8D0EAE76}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kiosk.WebUI", "WebUI\Kiosk.WebUI\Kiosk.WebUI.csproj", "{4480FF43-4BD8-4B36-8187-6421CD067B9B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiosk.DeliveryWebApi", "Microservices\Kiosk.DeliveryWebApi\Kiosk.DeliveryWebApi\Kiosk.DeliveryWebApi.csproj", "{66E0256F-7E7E-4604-8FA6-86E2D890181E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5E6584F-4F6A-429B-8D4D-8FF0107D7CCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5E6584F-4F6A-429B-8D4D-8FF0107D7CCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5E6584F-4F6A-429B-8D4D-8FF0107D7CCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5E6584F-4F6A-429B-8D4D-8FF0107D7CCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CAAAAF2-038D-4B3D-827A-EBE683BB4E16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CAAAAF2-038D-4B3D-827A-EBE683BB4E16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CAAAAF2-038D-4B3D-827A-EBE683BB4E16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CAAAAF2-038D-4B3D-827A-EBE683BB4E16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF8C1BFC-377E-41FB-BADA-C56E8D0EAE76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF8C1BFC-377E-41FB-BADA-C56E8D0EAE76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF8C1BFC-377E-41FB-BADA-C56E8D0EAE76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF8C1BFC-377E-41FB-BADA-C56E8D0EAE76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4480FF43-4BD8-4B36-8187-6421CD067B9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4480FF43-4BD8-4B36-8187-6421CD067B9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4480FF43-4BD8-4B36-8187-6421CD067B9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4480FF43-4BD8-4B36-8187-6421CD067B9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66E0256F-7E7E-4604-8FA6-86E2D890181E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66E0256F-7E7E-4604-8FA6-86E2D890181E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66E0256F-7E7E-4604-8FA6-86E2D890181E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66E0256F-7E7E-4604-8FA6-86E2D890181E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A5E6584F-4F6A-429B-8D4D-8FF0107D7CCB} = {AF475127-6126-4E86-982E-700FFF149D28}
+		{6CAAAAF2-038D-4B3D-827A-EBE683BB4E16} = {1924AE25-1AC8-4984-92A6-F2C920961F84}
+		{FF8C1BFC-377E-41FB-BADA-C56E8D0EAE76} = {1924AE25-1AC8-4984-92A6-F2C920961F84}
+		{4480FF43-4BD8-4B36-8187-6421CD067B9B} = {4817AA3F-10F3-4228-B34F-C61E6DD80866}
+		{66E0256F-7E7E-4604-8FA6-86E2D890181E} = {1924AE25-1AC8-4984-92A6-F2C920961F84}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DB7E6737-E29F-447F-A6E7-7806B1C712AE}
+	EndGlobalSection
+EndGlobal
