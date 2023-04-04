@@ -4,6 +4,7 @@
 
     using Kiosk.CatalogWebApi.Models;
     using Kiosk.Core.Dtos.Catalog;
+
     using Microsoft.EntityFrameworkCore;
 
     /// <inheritdoc cref="IProductRepository"/>

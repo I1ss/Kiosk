@@ -29,5 +29,10 @@
         /// Идентификатор бренда, к которому принадлежит продукт.
         /// </summary>
         public int BrandId { get; set; }
+
+        /// <summary>
+        /// Идентификатор заказа, к которому принадлежит продукт.
+        /// </summary>
+        public int OrderId { get; set; }
     }
 }
