@@ -1,10 +1,11 @@
 ﻿namespace Kiosk.CatalogWebApi.Repositories
 {
     using AutoMapper;
+
     using Kiosk.CatalogWebApi.Models;
+    using Kiosk.Core.Dtos.Catalog;
 
     using Microsoft.EntityFrameworkCore;
-    using Kiosk.Core.Dtos.Catalog;
 
     /// <inheritdoc cref="IBrandRepository" />
     public class BrandRepository : IBrandRepository

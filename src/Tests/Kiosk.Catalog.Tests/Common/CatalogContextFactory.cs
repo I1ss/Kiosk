@@ -43,7 +43,7 @@
         /// <summary>
         /// Создание контекста базы данных.
         /// </summary>
-        /// <returns></returns>
+        /// <returns> Контекст БД для каталога. </returns>
         public static CatalogDbContext Create()
         {
             var options = new DbContextOptionsBuilder<CatalogDbContext>()

@@ -1,7 +1,9 @@
 ﻿namespace Kiosk.CatalogWebApi.Repositories
 {
     using AutoMapper;
+
     using Kiosk.Core.Dtos.Catalog;
+
     using Microsoft.EntityFrameworkCore;
 
     /// <inheritdoc cref="ICatalogRepository"/>
