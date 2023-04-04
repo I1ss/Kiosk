@@ -68,7 +68,7 @@
         [HttpPost("order")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IActionResult> CreateOrder([FromBody] OrderDto order)
+        public async Task<IActionResult> CreateOrder([FromBody]OrderDto order)
         {
             await _orderRepository.CreateOrder(order);
             return Ok();
@@ -84,7 +84,7 @@
         [HttpPut("order")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IActionResult> UpdateOrder([FromBody] OrderDto order)
+        public async Task<IActionResult> UpdateOrder([FromBody]OrderDto order)
         {
             await _orderRepository.UpdateOrder(order);
             return Ok();

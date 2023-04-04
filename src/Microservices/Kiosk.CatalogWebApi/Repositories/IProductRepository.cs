@@ -41,8 +41,6 @@
         /// </summary>
         /// <param name="productId"> Идентификатор продукта. </param>
         /// <remarks> Удаляется существующий бренд на основе ДТО. </remarks>
-        /// <response code="200"> Продукт удален удачно. </response>
-        /// <response code="502"> Продукт не удален. Проблема на стороне сервера. </response>
         Task DeleteProduct(int productId);
     }
 }

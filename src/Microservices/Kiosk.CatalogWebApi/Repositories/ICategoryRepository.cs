@@ -41,8 +41,6 @@
         /// </summary>
         /// <param name="categoryId"> Идентификатор категории. </param>
         /// <remarks> Удаляется существующая категория на основе ДТО. </remarks>
-        /// <response code="200"> Категория удалена удачно. </response>
-        /// <response code="502"> Категория не удалена. Проблема на стороне сервера. </response>
         Task DeleteCategory(int categoryId);
     }
 }

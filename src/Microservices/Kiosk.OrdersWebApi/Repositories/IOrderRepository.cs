@@ -41,8 +41,6 @@
         /// </summary>
         /// <param name="orderId"> Идентификатор заказа. </param>
         /// <remarks> Удаляется существующий заказ на основе ДТО. </remarks>
-        /// <response code="200"> Заказ удален удачно. </response>
-        /// <response code="502"> Заказ не удален. Проблема на стороне сервера. </response>
         Task DeleteOrder(int orderId);
     }
 }
