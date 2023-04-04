@@ -34,7 +34,7 @@
         /// <returns> Категория товаров. </returns>
         /// <response code="200"> Категория возвращена удачно. </response>
         /// <response code="502"> Категория не обнаружена. Проблема на стороне сервера. </response>
-        [HttpGet("category/{categoryId}")]
+        [HttpGet("{categoryId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<CategoryDto> GetCategory(int categoryId)
@@ -50,7 +50,7 @@
         /// <returns> Категории товаров. </returns>
         /// <response code="200"> Категории возвращены удачно. </response>
         /// <response code="502"> Категории не обнаружены. Проблема на стороне сервера. </response>
-        [HttpGet("categories")]
+        [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IEnumerable<CategoryDto>> GetCategories()
@@ -66,7 +66,7 @@
         /// <remarks> Создаётся новая категория на основе ДТО. </remarks>
         /// <response code="200"> Категория создана удачно. </response>
         /// <response code="502"> Категория не обнаружена. Проблема на стороне сервера. </response>
-        [HttpPost("category")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IActionResult> CreateCategory([FromBody]CategoryDto category)
@@ -82,7 +82,7 @@
         /// <remarks> Обновляется существующая категория на основе ДТО. </remarks>
         /// <response code="200"> Категория обновлена удачно. </response>
         /// <response code="502"> Категория не обновлена. Проблема на стороне сервера. </response>
-        [HttpPut("category")]
+        [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IActionResult> UpdateCategory([FromBody]CategoryDto category)
@@ -98,7 +98,7 @@
         /// <remarks> Удаляется существующая категория на основе ДТО. </remarks>
         /// <response code="200"> Категория удалена удачно. </response>
         /// <response code="502"> Категория не удалена. Проблема на стороне сервера. </response>
-        [HttpDelete("category/{categoryId}")]
+        [HttpDelete("{categoryId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IActionResult> DeleteCategory(int categoryId)

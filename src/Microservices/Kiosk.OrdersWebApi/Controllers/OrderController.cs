@@ -33,7 +33,7 @@
         /// <returns> Заказ товаров. </returns>
         /// <response code="200"> Заказ возвращен удачно. </response>
         /// <response code="502"> Заказ не обнаружен. Проблема на стороне сервера. </response>
-        [HttpGet("order/{orderId}")]
+        [HttpGet("{orderId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<OrderDto> GetOrder(int orderId)
@@ -49,7 +49,7 @@
         /// <returns> Заказы товаров. </returns>
         /// <response code="200"> Заказы возвращены удачно. </response>
         /// <response code="502"> Заказы не обнаружены. Проблема на стороне сервера. </response>
-        [HttpGet("orders")]
+        [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IEnumerable<OrderDto>> GetOrders()
@@ -65,7 +65,7 @@
         /// <remarks> Создаётся новый заказ на основе ДТО. </remarks>
         /// <response code="200"> Заказ создан удачно. </response>
         /// <response code="502"> Заказ не обнаружен. Проблема на стороне сервера. </response>
-        [HttpPost("order")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IActionResult> CreateOrder([FromBody]OrderDto order)
@@ -81,7 +81,7 @@
         /// <remarks> Обновляется существующий заказ на основе ДТО. </remarks>
         /// <response code="200"> Заказ обновлен удачно. </response>
         /// <response code="502"> Заказ не обновлен. Проблема на стороне сервера. </response>
-        [HttpPut("order")]
+        [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IActionResult> UpdateOrder([FromBody]OrderDto order)
@@ -97,7 +97,7 @@
         /// <remarks> Удаляется существующий заказ на основе ДТО. </remarks>
         /// <response code="200"> Заказ удален удачно. </response>
         /// <response code="502"> Заказ не удален. Проблема на стороне сервера. </response>
-        [HttpDelete("order/{orderId}")]
+        [HttpDelete("{orderId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IActionResult> DeleteOrder(int orderId)

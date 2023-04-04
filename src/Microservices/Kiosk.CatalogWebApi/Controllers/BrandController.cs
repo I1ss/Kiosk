@@ -34,10 +34,10 @@
         /// <returns> Бренд товаров. </returns>
         /// <response code="200"> Бренд возвращен удачно. </response>
         /// <response code="502"> Бренд не обнаружен. Проблема на стороне сервера. </response>
-        [HttpGet("brand/{brandId}")]
+        [HttpGet("{brandId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<BrandDto> GetCategory(int brandId)
+        public async Task<BrandDto> GetBrand(int brandId)
         {
             var brand = await _brandRepository.GetBrand(brandId);
             return brand;
@@ -50,10 +50,10 @@
         /// <returns> Бренды товаров. </returns>
         /// <response code="200"> Бренды возвращены удачно. </response>
         /// <response code="502"> Бренды не обнаружены. Проблема на стороне сервера. </response>
-        [HttpGet("brands")]
+        [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IEnumerable<BrandDto>> GetCategories()
+        public async Task<IEnumerable<BrandDto>> GetBrands()
         {
             var brands = await _brandRepository.GetBrands();
             return brands;
@@ -66,10 +66,10 @@
         /// <remarks> Создаётся новый бренд на основе ДТО. </remarks>
         /// <response code="200"> Бренд создан удачно. </response>
         /// <response code="502"> Бренд не обнаружен. Проблема на стороне сервера. </response>
-        [HttpPost("brand")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IActionResult> CreateCategory([FromBody]BrandDto brand)
+        public async Task<IActionResult> CreateBrand([FromBody]BrandDto brand)
         {
             await _brandRepository.CreateBrand(brand);
             return Ok();
@@ -82,10 +82,10 @@
         /// <remarks> Обновляется существующий бренд на основе ДТО. </remarks>
         /// <response code="200"> Бренд обновлен удачно. </response>
         /// <response code="502"> Бренд не обновлен. Проблема на стороне сервера. </response>
-        [HttpPut("brand")]
+        [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IActionResult> UpdateCategory([FromBody]BrandDto brand)
+        public async Task<IActionResult> UpdateBrand([FromBody]BrandDto brand)
         {
             await _brandRepository.UpdateBrand(brand);
             return Ok();
@@ -98,10 +98,10 @@
         /// <remarks> Удаляется существующий бренд на основе ДТО. </remarks>
         /// <response code="200"> Бренд удален удачно. </response>
         /// <response code="502"> Бренд не удален. Проблема на стороне сервера. </response>
-        [HttpDelete("brand/{brandId}")]
+        [HttpDelete("{brandId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IActionResult> DeleteCategory(int brandId)
+        public async Task<IActionResult> DeleteBrand(int brandId)
         {
             await _brandRepository.DeleteBrand(brandId);
             return Ok();
