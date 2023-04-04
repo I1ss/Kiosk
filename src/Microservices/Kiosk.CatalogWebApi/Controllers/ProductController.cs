@@ -34,10 +34,10 @@
         /// <returns> Продукт товаров. </returns>
         /// <response code="200"> Продукт возвращен удачно. </response>
         /// <response code="502"> Продукт не обнаружен. Проблема на стороне сервера. </response>
-        [HttpGet("product/{productId}")]
+        [HttpGet("{productId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<ProductDto> GetCategory(int productId)
+        public async Task<ProductDto> GetProduct(int productId)
         {
             var product = await _productRepository.GetProduct(productId);
             return product;
@@ -50,10 +50,10 @@
         /// <returns> Продукты товаров. </returns>
         /// <response code="200"> Продукты возвращены удачно. </response>
         /// <response code="502"> Продукты не обнаружены. Проблема на стороне сервера. </response>
-        [HttpGet("products")]
+        [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IEnumerable<ProductDto>> GetCategories()
+        public async Task<IEnumerable<ProductDto>> GetProducts()
         {
             var products = await _productRepository.GetProducts();
             return products;
@@ -66,10 +66,10 @@
         /// <remarks> Создаётся новый продукт на основе ДТО. </remarks>
         /// <response code="200"> Продукт создан удачно. </response>
         /// <response code="502"> Продукт не обнаружен. Проблема на стороне сервера. </response>
-        [HttpPost("product")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IActionResult> CreateCategory([FromBody]ProductDto product)
+        public async Task<IActionResult> CreateProduct([FromBody]ProductDto product)
         {
             await _productRepository.CreateProduct(product);
             return Ok();
@@ -82,10 +82,10 @@
         /// <remarks> Обновляется существующий продукт на основе ДТО. </remarks>
         /// <response code="200"> Продукт обновлен удачно. </response>
         /// <response code="502"> Продукт не обновлен. Проблема на стороне сервера. </response>
-        [HttpPut("product")]
+        [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IActionResult> UpdateCategory([FromBody]ProductDto product)
+        public async Task<IActionResult> UpdateProduct([FromBody]ProductDto product)
         {
             await _productRepository.UpdateProduct(product);
             return Ok();
@@ -98,10 +98,10 @@
         /// <remarks> Удаляется существующий продукт на основе ДТО. </remarks>
         /// <response code="200"> Продукт удален удачно. </response>
         /// <response code="502"> Продукт не удален. Проблема на стороне сервера. </response>
-        [HttpDelete("product/{productId}")]
+        [HttpDelete("{productId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IActionResult> DeleteCategory(int productId)
+        public async Task<IActionResult> DeleteProduct(int productId)
         {
             await _productRepository.DeleteProduct(productId);
             return Ok();

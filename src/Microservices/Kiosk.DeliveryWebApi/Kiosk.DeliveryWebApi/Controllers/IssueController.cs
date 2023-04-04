@@ -10,7 +10,7 @@
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class TaskController : ControllerBase
+    public class IssueController : ControllerBase
     {
         /// <summary>
         /// Репозиторий заданий.
@@ -21,7 +21,7 @@
         /// Конструктор контроллера для заданий.
         /// </summary>
         /// <param name="taskRepository"> Репозиторий заданий. </param>
-        public TaskController(IIssueRepository taskRepository)
+        public IssueController(IIssueRepository taskRepository)
         {
             _taskRepository = taskRepository;
         }
@@ -34,7 +34,7 @@
         /// <returns> Задание. </returns>
         /// <response code="200"> Задание возвращено удачно. </response>
         /// <response code="502"> Задание не обнаружено. Проблема на стороне сервера. </response>
-        [HttpGet("issue/{issueId}")]
+        [HttpGet("{issueId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IssueDto> GetIssue(int issueId)
@@ -50,7 +50,7 @@
         /// <returns> Задания товаров. </returns>
         /// <response code="200"> Задания возвращены удачно. </response>
         /// <response code="502"> Задания не обнаружены. Проблема на стороне сервера. </response>
-        [HttpGet("issues")]
+        [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IEnumerable<IssueDto>> GetIssues()
@@ -66,7 +66,7 @@
         /// <remarks> Создаётся новое задание на основе ДТО. </remarks>
         /// <response code="200"> Задание создано удачно. </response>
         /// <response code="502"> Задание не обнаружено. Проблема на стороне сервера. </response>
-        [HttpPost("issue")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IActionResult> CreateTask([FromBody]IssueDto issue)
@@ -82,7 +82,7 @@
         /// <remarks> Обновляется существующее задание на основе ДТО. </remarks>
         /// <response code="200"> Задание обновлено удачно. </response>
         /// <response code="502"> Задание не обновлено. Проблема на стороне сервера. </response>
-        [HttpPut("issue")]
+        [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IActionResult> UpdateTask([FromBody]IssueDto issue)
@@ -98,7 +98,7 @@
         /// <remarks> Удаляется существующее задание на основе ДТО. </remarks>
         /// <response code="200"> Задание удалено удачно. </response>
         /// <response code="502"> Задание не удалено. Проблема на стороне сервера. </response>
-        [HttpDelete("issue/{issueId}")]
+        [HttpDelete("{issueId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IActionResult> DeleteTask(int issueId)
