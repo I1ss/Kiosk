@@ -1,9 +1,8 @@
-﻿using Kiosk.Core.Dtos.Catalog;
-
-namespace Kiosk.OrdersWebApi.Repositories
+﻿namespace Kiosk.OrdersWebApi.Repositories
 {
     using AutoMapper;
 
+    using Kiosk.Core.Dtos.Catalog;
     using Kiosk.Core.Dtos.Order;
     using Kiosk.OrdersWebApi.Models;
 

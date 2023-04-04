@@ -1,6 +1,7 @@
 ﻿namespace Kiosk.CatalogWebApi
 {
     using Microsoft.EntityFrameworkCore;
+
     using Kiosk.CatalogWebApi.Models;
 
     /// <summary>
