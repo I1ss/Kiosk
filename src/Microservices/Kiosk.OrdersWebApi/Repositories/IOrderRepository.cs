@@ -27,7 +27,7 @@
         /// </summary>
         /// <param name="order"> ДТО заказа. </param>
         /// <remarks> Создаётся новый заказ на основе ДТО. </remarks>
-        Task CreateOrder(OrderDto order);
+        Task<int> CreateOrder(OrderDto order);
 
         /// <summary>
         /// Обновить существующий заказ.

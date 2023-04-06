@@ -19,6 +19,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddDbContext<CatalogDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("LocalDefault"));
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
 var mapper = MappingConfig.RegisterMaps().CreateMapper();

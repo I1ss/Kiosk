@@ -48,11 +48,26 @@
         }
 
         /// <inheritdoc />
-        public async Task UpdateProductsInOrder(IEnumerable<ProductDto> productsInOrder)
+        public async Task UpdateProductsInOrder(List<ProductDto> productsInOrder, int orderId)
         {
+            if (productsInOrder?.Any() != true)
+            {
+                await DeleteProductsInOrder(orderId);
+                return;
+            }
+
+            productsInOrder.ForEach(product => product.OrderId = orderId);
             var dbProductInOrder = _mapper.Map<IEnumerable<ProductInOrder>>(productsInOrder);
 
             _orderDbContext.UpdateRange(dbProductInOrder);
+            await _orderDbContext.SaveChangesAsync();
+        }
+
+        /// <inheritdoc />
+        public async Task DeleteProductsInOrder(int orderId)
+        {
+            var products = _orderDbContext.ProductsInOrder.Where(product => product.OrderId == orderId);
+            _orderDbContext.ProductsInOrder.RemoveRange(products);
             await _orderDbContext.SaveChangesAsync();
         }
     }

@@ -1,7 +1,12 @@
 ﻿namespace Kiosk.OrdersWebApi.Controllers
 {
     using Kiosk.Core.Dtos.Order;
+    using Kiosk.Core.Enums;
+    using Kiosk.Core.Responses;
     using Kiosk.OrdersWebApi.Repositories;
+    using Kiosk.Core.Requests;
+
+    using MassTransit;
 
     using Microsoft.AspNetCore.Mvc;
 
@@ -17,12 +22,34 @@
         private readonly IOrderRepository _orderRepository;
 
         /// <summary>
+        /// Клиент для запроса создания.
+        /// </summary>
+        private readonly IRequestClient<CreateIssueRequest> _requestCreateClient;
+
+        /// <summary>
+        /// Клиент для запроса обновления.
+        /// </summary>
+        private readonly IRequestClient<UpdateIssueRequest> _requestUpdateClient;
+
+        /// <summary>
+        /// Клиент для запроса удаления.
+        /// </summary>
+        private readonly IRequestClient<DeleteIssueRequest> _requestDeleteClient;
+
+        /// <summary>
         /// Конструктор контроллера для заказов.
         /// </summary>
         /// <param name="orderRepository"> Репозиторий заказов. </param>
-        public OrderController(IOrderRepository orderRepository)
+        /// <param name="requestCreateClient"> Клиент для запроса создания. </param>
+        /// <param name="requestUpdateClient"> Клиент для запроса обновления. </param>
+        /// <param name="requestDeleteClient"> Клиент для запроса удаления. </param>
+        public OrderController(IOrderRepository orderRepository, IRequestClient<CreateIssueRequest> requestCreateClient, 
+            IRequestClient<UpdateIssueRequest> requestUpdateClient, IRequestClient<DeleteIssueRequest> requestDeleteClient)
         {
             _orderRepository = orderRepository;
+            _requestCreateClient = requestCreateClient;
+            _requestUpdateClient = requestUpdateClient;
+            _requestDeleteClient = requestDeleteClient;
         }
 
         /// <summary>
@@ -70,8 +97,16 @@
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IActionResult> CreateOrder([FromBody]OrderDto order)
         {
-            await _orderRepository.CreateOrder(order);
-            return Ok();
+            order.OrderId = await _orderRepository.CreateOrder(order);
+            if (order.DeliveryType == DeliveryTypeEnum.Client)
+                return Ok();
+
+            // Создаётся экземпляр задания в доставку, если указан тип получения "курьером".
+            var issueRequest = new CreateIssueRequest { Order = order };
+            var response = await _requestCreateClient.GetResponse<IssueResponse>(issueRequest);
+            var issue = response.Message.Issue;
+
+            return Ok(issue);
         }
 
         /// <summary>
@@ -87,7 +122,12 @@
         public async Task<IActionResult> UpdateOrder([FromBody]OrderDto order)
         {
             await _orderRepository.UpdateOrder(order);
-            return Ok();
+
+            var issueRequest = new UpdateIssueRequest { Order = order };
+            var response = await _requestUpdateClient.GetResponse<IssueResponse>(issueRequest);
+            var issue = response.Message.Issue;
+
+            return Ok(issue);
         }
 
         /// <summary>
@@ -103,7 +143,11 @@
         public async Task<IActionResult> DeleteOrder(int orderId)
         {
             await _orderRepository.DeleteOrder(orderId);
-            return Ok();
+
+            var issueRequest = new DeleteIssueRequest { OrderId = orderId };
+            var response = await _requestDeleteClient.GetResponse<IssueResponse>(issueRequest);
+
+            return Ok(orderId);
         }
     }
 }

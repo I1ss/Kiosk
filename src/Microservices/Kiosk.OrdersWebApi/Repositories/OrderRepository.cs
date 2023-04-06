@@ -68,18 +68,20 @@
         }
 
         /// <inheritdoc />
-        public async Task CreateOrder(OrderDto order)
+        public async Task<int> CreateOrder(OrderDto order)
         {
             var dbOrder = _mapper.Map<Order>(order);
             await _orderDbContext.AddAsync(dbOrder);
             await _orderDbContext.SaveChangesAsync();
 
             if (order.Products?.Any() != true)
-                return;
+                return 0;
 
             var productsInOrder = order.Products;
             productsInOrder.ForEach(product => product.OrderId = dbOrder.OrderId);
             await _productInOrderRepository.CreateProductsInOrder(productsInOrder);
+
+            return dbOrder.OrderId;
         }
 
         /// <inheritdoc />
@@ -89,12 +91,8 @@
             _orderDbContext.Update(dbOrder);
             await _orderDbContext.SaveChangesAsync();
 
-            if (order.Products?.Any() != true)
-                return;
-
             var productsInOrder = order.Products;
-            productsInOrder.ForEach(product => product.OrderId = order.OrderId);
-            await _productInOrderRepository.UpdateProductsInOrder(productsInOrder);
+            await _productInOrderRepository.UpdateProductsInOrder(productsInOrder, order.OrderId);
         }
 
         /// <inheritdoc />

@@ -16,6 +16,14 @@
         Task<IssueDto> GetIssue(int issueId);
 
         /// <summary>
+        /// Получить задание по идентификатору заказа. 
+        /// </summary>
+        /// <param name="orderId"> Идентификатор заказа. </param>
+        /// <remarks> Задание берётся из базы данных. </remarks>
+        /// <returns> Задание товаров. </returns>
+        Task<IssueDto> GetIssueByOrderId(int orderId);
+
+        /// <summary>
         /// Получить все задания. 
         /// </summary>
         /// <remarks> Задания берутся из базы данных. </remarks>
