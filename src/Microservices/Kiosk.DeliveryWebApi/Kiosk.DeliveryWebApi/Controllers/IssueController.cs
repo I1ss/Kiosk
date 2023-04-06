@@ -8,6 +8,8 @@
     using MassTransit;
 
     using Microsoft.AspNetCore.Mvc;
+    using Kiosk.Core.Dtos.Order;
+    using Kiosk.Core.Enums;
 
     /// <summary>
     /// Контроллер для заданий.
@@ -141,6 +143,42 @@
         public async Task<IActionResult> DeleteTask(int issueId)
         {
             await _taskRepository.DeleteIssue(issueId);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Доставить заказ.
+        /// </summary>
+        /// <param name="issue"> ДТО задания. </param>
+        /// <remarks> Доставляется существующий заказ на основе ДТО. </remarks>
+        /// <response code="200"> Заказ доставлен удачно. </response>
+        /// <response code="502"> Заказ не доставлен. Проблема на стороне сервера. </response>
+        [HttpPut("completed-order")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        public async Task<IActionResult> CompletedOrder([FromBody]IssueDto issue)
+        {
+            issue.OrderStatus = OrderStatusEnum.Completed;
+            await UpdateTask(issue);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Отменить/вернуть заказ.
+        /// </summary>
+        /// <param name="issue"> ДТО задания. </param>
+        /// <remarks> Отменяется существующий заказ на основе ДТО. </remarks>
+        /// <response code="200"> Заказ отменен удачно. </response>
+        /// <response code="502"> Заказ не отменен. Проблема на стороне сервера. </response>
+        [HttpPut("cancel-order")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        public async Task<IActionResult> CancelOrder([FromBody]IssueDto issue)
+        {
+            issue.OrderStatus = OrderStatusEnum.Canceled;
+            await UpdateTask(issue);
+
             return Ok();
         }
     }

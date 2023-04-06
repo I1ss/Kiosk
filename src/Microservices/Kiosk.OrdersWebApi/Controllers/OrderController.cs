@@ -149,5 +149,23 @@
 
             return Ok(orderId);
         }
+
+        /// <summary>
+        /// Отменить заказ.
+        /// </summary>
+        /// <param name="order"> ДТО заказа. </param>
+        /// <remarks> Отменяется существующий заказ на основе ДТО. </remarks>
+        /// <response code="200"> Заказ отменен удачно. </response>
+        /// <response code="502"> Заказ не отменен. Проблема на стороне сервера. </response>
+        [HttpPut("cancel-order")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        public async Task<IActionResult> CancelOrder([FromBody]OrderDto order)
+        {
+            order.OrderStatus = OrderStatusEnum.Canceled;
+            await UpdateOrder(order);
+
+            return Ok();
+        }
     }
 }

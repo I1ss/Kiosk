@@ -170,6 +170,32 @@
       "SwaggerKey": "issues"
     },
     {
+      "UpstreamPathTemplate": "/api/Issue/cancel-order",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5188
+        }
+      ],
+      "DownstreamPathTemplate": "/api/Issue/cancel-order",
+      "SwaggerKey": "issues"
+    },
+    {
+      "UpstreamPathTemplate": "/api/Issue/completed-order",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5188
+        }
+      ],
+      "DownstreamPathTemplate": "/api/Issue/completed-order",
+      "SwaggerKey": "issues"
+    },
+    {
       "UpstreamPathTemplate": "/api/Order",
       "UpstreamHttpMethod": [ "Get", "Post", "Put" ],
       "DownstreamScheme": "http",
@@ -206,6 +232,19 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Order/all",
+      "SwaggerKey": "orders"
+    },
+    {
+      "UpstreamPathTemplate": "/api/Order/cancel-order",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5007
+        }
+      ],
+      "DownstreamPathTemplate": "/api/Order/cancel-order",
       "SwaggerKey": "orders"
     }
   ],
