@@ -10,3 +10,5 @@
 ##### docker run --restart always --name some-postgres -p 9595:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgres
 #### Также нам необходимо подключить RabbitMQ, для этого в консоли нужно прописать:
 ##### docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.11-management
+### Настройка запуска проектов выглядит следующим образом:
+![ЗапускПроектов](https://github.com/I1ss/Kiosk/blob/Dev/StartupProjects.png)
