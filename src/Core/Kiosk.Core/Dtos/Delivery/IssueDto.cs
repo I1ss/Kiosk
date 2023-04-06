@@ -28,6 +28,11 @@
         public double Payment { get; set; }
 
         /// <summary>
+        /// Идентификатор заказа.
+        /// </summary>
+        public int OrderId { get; set; }
+
+        /// <summary>
         /// Продукты по заданию.
         /// </summary>
         public List<ProductDto> Products { get; set; }

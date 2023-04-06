@@ -36,5 +36,12 @@
         /// </summary>
         [Column("Issue_Payment")]
         public double Payment { get; set; }
+
+        /// <summary>
+        /// Идентификатор заказа.
+        /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("Order_Id")]
+        public int OrderId { get; set; }
     }
 }

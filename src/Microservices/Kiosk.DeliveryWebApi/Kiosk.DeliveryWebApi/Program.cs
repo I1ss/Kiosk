@@ -1,9 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 
+using MassTransit;
+
 using System.Reflection;
 
 using Kiosk.DeliveryWebApi;
 using Kiosk.DeliveryWebApi.Repositories;
+using Kiosk.Core.Requests;
+using Kiosk.DeliveryWebApi.Consumer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +20,29 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
+builder.Services.AddMassTransit(options =>
+{
+    options.AddBus(context => Bus.Factory.CreateUsingRabbitMq(configuration =>
+    {
+        configuration.ReceiveEndpoint("Delivery", e =>
+        {
+            e.ConfigureConsumer(context, typeof(CreateIssueConsumer));
+            e.ConfigureConsumer(context, typeof(UpdateIssueConsumer));
+            e.ConfigureConsumer(context, typeof(DeleteIssueConsumer));
+        });
+    }));
+
+    options.AddConsumer<CreateIssueConsumer>();
+    options.AddConsumer<UpdateIssueConsumer>();
+    options.AddConsumer<DeleteIssueConsumer>();
+    options.AddRequestClient<UpdateOrderRequest>();
+    options.AddRequestClient<GetProductsInOrderRequest>();
+});
+
 builder.Services.AddDbContext<DeliveryDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("LocalDefault"));
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
 var mapper = MappingConfig.RegisterMaps().CreateMapper();

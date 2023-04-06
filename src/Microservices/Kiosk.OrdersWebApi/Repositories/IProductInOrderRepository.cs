@@ -25,7 +25,15 @@
         /// Обновить существующие продукты в заказе.
         /// </summary>
         /// <param name="productsInOrder"> ДТО продуктов в заказе. </param>
+        /// <param name="orderId"> Идентификатор заказа, к которому относятся продукты. </param>
         /// <remarks> Обновляются существующие продукты в заказе на основе ДТО. </remarks>
-        Task UpdateProductsInOrder(IEnumerable<ProductDto> productsInOrder);
+        Task UpdateProductsInOrder(List<ProductDto> productsInOrder, int orderId);
+
+        /// <summary>
+        /// Очистить продукты по заданному идентификатору заказа.
+        /// </summary>
+        /// <param name="orderId"> Идентификатор заказа. </param>
+        /// <remarks> Вариант использования: очистить заказ. </remarks>
+        Task DeleteProductsInOrder(int orderId);
     }
 }

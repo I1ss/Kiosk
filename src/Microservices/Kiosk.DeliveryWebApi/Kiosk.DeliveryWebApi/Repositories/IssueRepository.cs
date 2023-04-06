@@ -39,6 +39,13 @@
         }
 
         /// <inheritdoc />
+        public async Task<IssueDto> GetIssueByOrderId(int orderId)
+        {
+            var issue = await _deliveryDbContext.Issues.FirstOrDefaultAsync(issue => issue.OrderId == orderId);
+            return _mapper.Map<IssueDto>(issue);
+        }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<IssueDto>> GetIssues()
         {
             var issues = await _deliveryDbContext.Issues.ToListAsync();

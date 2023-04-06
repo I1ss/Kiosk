@@ -2,7 +2,11 @@
 {
     using Kiosk.Core.Dtos.Delivery;
     using Kiosk.DeliveryWebApi.Repositories;
-     
+    using Kiosk.Core.Requests;
+    using Kiosk.Core.Responses;
+
+    using MassTransit;
+
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -18,12 +22,27 @@
         private readonly IIssueRepository _taskRepository;
 
         /// <summary>
+        /// Клиент для запроса обновления.
+        /// </summary>
+        private readonly IRequestClient<UpdateOrderRequest> _requestUpdateClient;
+
+        /// <summary>
+        /// Клиент для запроса получения.
+        /// </summary>
+        private readonly IRequestClient<GetProductsInOrderRequest> _requestGetProductsClient;
+
+        /// <summary>
         /// Конструктор контроллера для заданий.
         /// </summary>
         /// <param name="taskRepository"> Репозиторий заданий. </param>
-        public IssueController(IIssueRepository taskRepository)
+        /// <param name="requestUpdateClient"> Клиент для запроса обновления. </param>
+        /// <param name="requestGetProductsClient"> Клиент для запроса получения. </param>
+        public IssueController(IIssueRepository taskRepository, IRequestClient<UpdateOrderRequest> requestUpdateClient, 
+            IRequestClient<GetProductsInOrderRequest> requestGetProductsClient)
         {
             _taskRepository = taskRepository;
+            _requestUpdateClient = requestUpdateClient;
+            _requestGetProductsClient = requestGetProductsClient;
         }
 
         /// <summary>
@@ -40,6 +59,13 @@
         public async Task<IssueDto> GetIssue(int issueId)
         {
             var issue = await _taskRepository.GetIssue(issueId);
+
+            var request = _requestGetProductsClient.Create(new GetProductsInOrderRequest());
+            var response = await request.GetResponse<ProductsInOrderResponse>();
+
+            var products = response.Message.Products.Where(product => product.OrderId == issue.OrderId);
+            issue.Products = products.ToList();
+
             return issue;
         }
 
@@ -55,7 +81,14 @@
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<IEnumerable<IssueDto>> GetIssues()
         {
-            var issues = await _taskRepository.GetIssues();
+            var issues = (await _taskRepository.GetIssues()).ToList();
+
+            var request = _requestGetProductsClient.Create(new GetProductsInOrderRequest());
+            var response = await request.GetResponse<ProductsInOrderResponse>();
+
+            var products = response.Message.Products.ToList();
+            issues.ForEach(issue => issue.Products = products.Where(product => product.OrderId == issue.OrderId).ToList());
+
             return issues;
         }
 
@@ -88,7 +121,11 @@
         public async Task<IActionResult> UpdateTask([FromBody]IssueDto issue)
         {
             await _taskRepository.UpdateIssue(issue);
-            return Ok();
+
+            var request = _requestUpdateClient.Create(new UpdateOrderRequest { Issue = issue });
+            var response = await request.GetResponse<OrderResponse>();
+
+            return Ok(response);
         }
 
         /// <summary>
