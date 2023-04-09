@@ -1,4 +1,6 @@
-﻿namespace Kiosk.DeliveryWebApi.Consumer
+﻿using Kiosk.Core.Dtos.Delivery;
+
+namespace Kiosk.DeliveryWebApi.Consumer
 {
     using Kiosk.Core.Requests;
     using Kiosk.Core.Responses;
@@ -34,8 +36,13 @@
             var orderId = context.Message.OrderId;
 
             var issue = await _issueRepository.GetIssueByOrderId(orderId);
-            await _issueRepository.DeleteIssue(issue.IssueId);
+            if (issue == null)
+            {
+                await context.RespondAsync(new IssueResponse { Issue = new IssueDto() });
+                return;
+            }
 
+            await _issueRepository.DeleteIssue(issue.IssueId);
             await context.RespondAsync(new IssueResponse { Issue = issue });
         }
     }

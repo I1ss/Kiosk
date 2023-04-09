@@ -22,12 +22,18 @@
         Task CreateProductsInOrder(IEnumerable<ProductDto> productsInOrder);
 
         /// <summary>
+        /// Удалить продукты в заказе.
+        /// </summary>
+        /// <param name="productsInOrder"> Продукты в заказе. </param>
+        /// <remarks> Удаляются продукты в заказе на основе ДТО. </remarks>
+        void DeleteProductsInOrder(IEnumerable<ProductDto> productsInOrder);
+
+        /// <summary>
         /// Обновить существующие продукты в заказе.
         /// </summary>
         /// <param name="productsInOrder"> ДТО продуктов в заказе. </param>
-        /// <param name="orderId"> Идентификатор заказа, к которому относятся продукты. </param>
         /// <remarks> Обновляются существующие продукты в заказе на основе ДТО. </remarks>
-        Task UpdateProductsInOrder(List<ProductDto> productsInOrder, int orderId);
+        Task UpdateProductsInOrder(List<ProductDto> productsInOrder);
 
         /// <summary>
         /// Очистить продукты по заданному идентификатору заказа.

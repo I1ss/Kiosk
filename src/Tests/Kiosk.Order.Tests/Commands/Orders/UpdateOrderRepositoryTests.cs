@@ -1,4 +1,6 @@
-﻿namespace Kiosk.Order.Tests.Commands.Orders
+﻿using Kiosk.Core.Enums;
+
+namespace Kiosk.Order.Tests.Commands.Orders
 {
     using Kiosk.Core.Dtos.Order;
     using Kiosk.Order.Tests.Common;
@@ -24,7 +26,7 @@
             var mapper = MappingConfig.RegisterMaps().CreateMapper();
             var productRepository = new ProductInOrderRepository(Context, mapper);
             var orderRepository = new OrderRepository(Context, mapper, productRepository);
-            var updatedTotalPrice = 555;
+            var updatedDeliveryStatus = DeliveryTypeEnum.Client;
             var orderId = OrderContextFactory.FIRST_ORDER_ID;
 
             // Избавляемся от отслеживания сущностей во избежание ошибок.
@@ -34,7 +36,7 @@
             var orderDto = new OrderDto
             {
                 OrderId = OrderContextFactory.FIRST_ORDER_ID,
-                TotalPrice = updatedTotalPrice
+                DeliveryType = updatedDeliveryStatus
             };
 
             // Act
@@ -42,7 +44,7 @@
 
             // Assert
             Assert.NotNull(await Context.Orders.SingleOrDefaultAsync(order =>
-                order.OrderId == orderId && order.TotalPrice.Equals(updatedTotalPrice)));
+                order.OrderId == orderId && order.DeliveryType.Equals(updatedDeliveryStatus)));
         }
 
         /// <summary>

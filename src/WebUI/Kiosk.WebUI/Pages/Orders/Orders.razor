@@ -1,0 +1,85 @@
+﻿@page "/orders"
+@inject HttpClient HttpClient
+
+<PageTitle>Заказы</PageTitle>
+
+<h1 align="center">Заказы</h1>
+<hr />
+
+@if (_orders != null)
+{
+    @foreach (var order in _orders)
+    {
+        <h3>@order.DeliveryType/@order.OrderStatus</h3>
+        <h4>@order.TotalPrice</h4>
+        <border>
+            <h4>Продукты:</h4>
+            <div class="row row-cols-3 col-md-12 text-center">
+                @foreach (var product in order.Products)
+                {
+                    <div class="col" style="padding: 10px;">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">@product.ProductName</h5>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Стоимость: @product.ProductPrice ₽</li>
+                                <li class="list-group-item">Код продукта: @product.ProductCode</li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="card-body">
+                <button class="btn btn-danger" @onclick="(async() => await CancelOrder(order))">Отменить заказ</button>
+                <button class="btn btn-danger" @onclick="(async() => await DeleteOrder(order.OrderId))">Удалить заказ</button>
+            </div>
+        </border>
+    }
+}
+
+@code {
+    /// <summary>
+    /// Заказы.
+    /// </summary>
+    private IEnumerable<OrderDto>? _orders;
+
+    /// <summary>
+    /// Инициализация компонента.
+    /// </summary>
+    /// <remarks> Инициализируются здесь заказы. </remarks>
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await FetchOrderList();
+    }
+
+    /// <summary>
+    /// Инициализация заказов.
+    /// </summary>
+    private async Task FetchOrderList()
+    {
+        _orders = await HttpClient.GetFromJsonAsync<IEnumerable<OrderDto>>("api/Order/all");
+    }
+
+    /// <summary>
+    /// Отменить заказ.
+    /// </summary>
+    /// <param name="order"> Заказ. </param>
+    private async Task CancelOrder(OrderDto order)
+    {
+        await HttpClient.PutAsJsonAsync<OrderDto>("api/order/cancel-order", order);
+        await FetchOrderList();
+    }
+
+    /// <summary>
+    /// Удалить заказ.
+    /// </summary>
+    /// <param name="orderId"> Идентификатор заказа. </param>
+    private async Task DeleteOrder(int orderId)
+    {
+        await HttpClient.DeleteAsync($"api/order/{orderId}");
+        await FetchOrderList();
+    }
+}

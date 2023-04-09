@@ -1,0 +1,44 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Киоск</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Каталог
+            </NavLink>
+            <NavLink class="nav-link" href="/categories" Match="NavLinkMatch.All">
+                <span class="oi oi-arrow-circle-bottom" aria-hidden="true"></span> Категории
+            </NavLink>
+            <NavLink class="nav-link" href="/brands" Match="NavLinkMatch.All">
+                <span class="oi oi-dashboard" aria-hidden="true"></span> Бренды
+            </NavLink>
+            <NavLink class="nav-link" href="/products" Match="NavLinkMatch.All">
+                <span class="oi oi-project" aria-hidden="true"></span> Продукты
+            </NavLink>
+            <NavLink class="nav-link" href="/orders" Match="NavLinkMatch.All">
+                <span class="oi oi-file" aria-hidden="true"></span> Заказы
+            </NavLink>
+            <NavLink class="nav-link" href="/issues" Match="NavLinkMatch.All">
+                <span class="oi oi-task" aria-hidden="true"></span> Задания
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

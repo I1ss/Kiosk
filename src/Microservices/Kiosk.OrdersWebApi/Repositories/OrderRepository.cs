@@ -92,7 +92,25 @@
             await _orderDbContext.SaveChangesAsync();
 
             var productsInOrder = order.Products;
-            await _productInOrderRepository.UpdateProductsInOrder(productsInOrder, order.OrderId);
+            if (productsInOrder?.Any() != true)
+            {
+                await _productInOrderRepository.DeleteProductsInOrder(order.OrderId);
+                return;
+            }
+
+            productsInOrder.ForEach(product => product.OrderId = order.OrderId);
+
+            var dbOrderProduct = (await GetOrder(dbOrder.OrderId)).Products;
+            var removedProductsInOrder = dbOrderProduct.Where(product => productsInOrder
+                .All(productDb => product.ProductId != productDb.ProductId)).ToList();
+            var newProductsInOrder = productsInOrder.Where(product => dbOrderProduct
+                .All(productDb => productDb.ProductId != product.ProductId)).ToList();
+            var generalProductsInOrder = productsInOrder.Where(product => dbOrderProduct
+                .All(productDb => productDb.ProductId == product.ProductId)).ToList();
+
+            _productInOrderRepository.DeleteProductsInOrder(removedProductsInOrder);
+            await _productInOrderRepository.CreateProductsInOrder(newProductsInOrder);
+            await _productInOrderRepository.UpdateProductsInOrder(generalProductsInOrder);
         }
 
         /// <inheritdoc />

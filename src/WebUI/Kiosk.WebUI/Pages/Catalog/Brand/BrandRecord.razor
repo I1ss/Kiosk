@@ -1,0 +1,78 @@
+﻿@inject HttpClient HttpClient
+
+@if (!_isEditMode)
+{
+    <tr>
+        <td>@Brand.BrandName</td>
+        <td>@CategoryName</td>
+        <td><a @onclick="() =>{ _isEditMode = true; }" href="javascript:void(0)"><i class="oi oi-pencil"></i></a></td>
+        <td><a @onclick="async () => await DeleteBrand.InvokeAsync(Brand.BrandId)" href="javascript:void(0)"><i class="oi oi-trash"></i></a></td>
+    </tr>
+}
+else
+{
+    @if (Categories != null && Categories.Count != 0)
+    {
+        <datalist id="brandList">
+            @foreach (var category in Categories)
+            {
+                <option value="@category.CategoryName" />
+            }
+        </datalist>
+    }
+    <tr>
+        <td><input class="form-control" @bind="Brand.BrandName" placeholder="Название" /></td>
+        <td><input class="form-control" @onchange="SetCategoryId" type="text" list="brandList" placeholder="@CategoryName"></td>
+        <td class="pt-3"><a @onclick="async () => {await UpdateBrand.InvokeAsync(Brand);_isEditMode = false;}"
+                            href="javascript:void(0)"><i class="oi oi-check"></i></a>
+        </td>
+        <td></td>
+    </tr>
+}
+
+@code {
+    /// <summary>
+    /// Изменяется ли запись?
+    /// </summary>
+    private bool _isEditMode = false;
+
+    /// <summary>
+    /// Имя категории текущей записи.
+    /// </summary>
+    [Parameter]
+    public string CategoryName { get; set; }
+
+    /// <summary>
+    /// Бренд.
+    /// </summary>
+    [Parameter]
+    public BrandDto Brand { get; set; }
+
+    /// <summary>
+    /// Категории.
+    /// </summary>
+    [Parameter]
+    public List<CategoryDto> Categories { get; set; }
+
+    /// <summary>
+    /// Обновление бренда.
+    /// </summary>
+    [Parameter]
+    public EventCallback<BrandDto> UpdateBrand { get; set; }
+
+    /// <summary>
+    /// Удаление бренда.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> DeleteBrand { get; set; }
+
+    /// <summary>
+    /// Установить идентификатор категории по имени.
+    /// </summary>
+    /// <param name="args"> Имя. </param>
+    private void SetCategoryId(ChangeEventArgs args)
+    {
+        var categoryName = args?.Value?.ToString();
+        Brand.CategoryId = Categories?.FirstOrDefault(category => category.CategoryName.Equals(categoryName))?.CategoryId ?? 0;
+    }
+}

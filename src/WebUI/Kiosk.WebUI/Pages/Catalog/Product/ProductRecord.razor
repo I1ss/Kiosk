@@ -1,0 +1,83 @@
+﻿@inject HttpClient HttpClient
+
+@if (!_isEditMode)
+{
+    <tr>
+        <td>@Product.ProductName</td>
+        <td>@Product.ProductCode</td>
+        <td>@Product.ProductPrice</td>
+        <td>@BrandName</td>
+        <td><a @onclick="() =>{ _isEditMode = true; }" href="javascript:void(0)"><i class="oi oi-pencil"></i></a></td>
+        <td><a @onclick="async () => await DeleteProduct.InvokeAsync(Product.ProductId)" href="javascript:void(0)"><i class="oi oi-trash"></i></a></td>
+    </tr>
+}
+else
+{
+    @if (Brands != null && Brands.Count != 0)
+    {
+        <datalist id="brandList">
+            @foreach (var brand in Brands)
+            {
+                <option value="@brand.BrandName"/>
+            }
+        </datalist>
+    }
+    <tr>
+        <td><input class="form-control" @bind="Product.ProductName" placeholder="Название" /></td>
+        <td><input class="form-control" @bind="Product.ProductCode" placeholder="Код" /></td>
+        <td><input class="form-control" @bind="Product.ProductPrice" placeholder="Цена" /></td>
+        <td><input class="form-control" @onchange="SetBrandId" type="text" list="brandList" placeholder="@BrandName"></td>
+        <td class="pt-3">
+            <a @onclick="async () => {await UpdateProduct.InvokeAsync(Product);_isEditMode = false;}"
+               href="javascript:void(0)"><i class="oi oi-check"></i></a>
+        </td>
+        <td></td>
+    </tr>
+}
+
+@code {
+    /// <summary>
+    /// Изменяется ли запись?
+    /// </summary>
+    private bool _isEditMode = false;
+
+    /// <summary>
+    /// Имя бренда.
+    /// </summary>
+    [Parameter]
+    public string BrandName { get; set; }
+
+    /// <summary>
+    /// Продукт.
+    /// </summary>
+    [Parameter]
+    public ProductDto Product { get; set; }
+
+    /// <summary>
+    /// Бренды.
+    /// </summary>
+    [Parameter]
+    public List<BrandDto> Brands { get; set; }
+
+    /// <summary>
+    /// Обновление продукта.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ProductDto> UpdateProduct { get; set; }
+
+    /// <summary>
+    /// Удаление продукта.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> DeleteProduct { get; set; }
+
+    /// <summary>
+    /// Установить идентификатор бренда по имени.
+    /// </summary>
+    /// <param name="args"> Имя. </param>
+    private void SetBrandId(ChangeEventArgs args)
+    {
+        var brandName = args?.Value?.ToString();
+        Product.BrandId = Brands?.FirstOrDefault(brand => brand.BrandName.Equals(brandName))?.BrandId ?? 0;
+    }
+}

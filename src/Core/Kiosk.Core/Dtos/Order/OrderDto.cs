@@ -1,8 +1,7 @@
-﻿using Kiosk.Core.Dtos.Catalog;
-
-namespace Kiosk.Core.Dtos.Order
+﻿namespace Kiosk.Core.Dtos.Order
 {
     using Kiosk.Core.Enums;
+    using Kiosk.Core.Dtos.Catalog;
 
     /// <summary>
     /// ДТО "заказа" для передачи через запросы.

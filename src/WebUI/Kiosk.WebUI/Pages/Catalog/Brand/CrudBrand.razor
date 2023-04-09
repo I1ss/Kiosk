@@ -1,0 +1,141 @@
+﻿@page "/brands"
+@inject HttpClient HttpClient
+
+<PageTitle>Бренды</PageTitle>
+
+<h3>Бренды: создание, обновление, удаление.</h3>
+
+<div class="row">
+    <div class="col-12 mt-5">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <td>Название</td>
+                    <td>Категория</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                </thead>
+                <tbody>
+                @if (_categories != null && _categories.Count != 0)
+                {
+                    <datalist id="categoriesList">
+                        @foreach (var category in _categories)
+                        {
+                            <option value="@category.CategoryName" />
+                        }
+                    </datalist>
+                }
+                else
+                {
+                    <tr>
+                        <td class="text-center" colspan="5">Нет категорий, для которых можно создавать бренды! Добавьте сначала категории.</td>
+                    </tr>
+                }
+                <tr>
+                    <td><input class="form-control" @bind="_newBrand.BrandName" placeholder="Название"/></td>
+                    <td><input @onchange="SetCategoryId" class="form-control" type="text" list="categoriesList" placeholder="Категория"></td>
+                    <td class="pt-3"><a @onclick="AddBrand" href="javascript:void(0)"><i class="oi oi-plus"></i></a></td>
+                    <td></td>
+                </tr>
+                @if (_brands != null && _brands.Count != 0)
+                {
+                    foreach (var brand in _brands)
+                    {
+                        var categoryName = _categories?.FirstOrDefault(category => category.CategoryId
+                                .Equals(brand.CategoryId))?.CategoryName;
+                        <BrandRecord Categories="_categories" CategoryName="@categoryName" Brand="brand" UpdateBrand="UpdateBrand" DeleteBrand="DeleteBrand"/>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td class="text-center" colspan="5">Нет брендов для отображения.</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Категории.
+    /// </summary>
+    private List<CategoryDto>? _categories;
+
+    /// <summary>
+    /// Бренды.
+    /// </summary>
+    private List<BrandDto>? _brands;
+
+    /// <summary>
+    /// Создаваемый бренд.
+    /// </summary>
+    private BrandDto _newBrand;
+
+    /// <summary>
+    /// Инициализация компонента.
+    /// </summary>
+    /// <remarks> Инициализируются здесь бренды и категории. </remarks>
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await FetchBrandList();
+    }
+
+    /// <summary>
+    /// Инициализация брендов.
+    /// </summary>
+    private async Task FetchBrandList()
+    {
+        _newBrand = new BrandDto();
+        _brands = await HttpClient.GetFromJsonAsync<List<BrandDto>>("/api/Brand/all");
+        _categories = await HttpClient.GetFromJsonAsync<List<CategoryDto>>("/api/Category/all");
+    }
+
+    /// <summary>
+    /// Добавление бренда.
+    /// </summary>
+    private async Task AddBrand()
+    {
+        var categoryId = _newBrand.CategoryId;
+        _newBrand.Products ??= new List<ProductDto>();
+        await HttpClient.PostAsJsonAsync("/api/Brand", _newBrand);
+        await FetchBrandList();
+        _newBrand = new BrandDto { CategoryId = categoryId };
+    }
+
+    /// <summary>
+    /// Обновление бренда.
+    /// </summary>
+    /// <param name="brand"> Существующий бренд. </param>
+    private async Task UpdateBrand(BrandDto brand)
+    {
+        brand.Products ??= new List<ProductDto>();
+        await HttpClient.PutAsJsonAsync("/api/Brand", brand);
+        await FetchBrandList();
+    }
+
+    /// <summary>
+    /// Удаление бренда.
+    /// </summary>
+    /// <param name="brandId"> Идентификатор бренда. </param>
+    private async Task DeleteBrand(int brandId)
+    {
+        var result = await HttpClient.DeleteAsync($"/api/Brand/{brandId}");
+        await FetchBrandList();
+    }
+
+    /// <summary>
+    /// Установить идентификатор категории по имени.
+    /// </summary>
+    /// <param name="args"> Имя. </param>
+    private void SetCategoryId(ChangeEventArgs args)
+    {
+        var categoryName = args?.Value?.ToString();
+        _newBrand.CategoryId = _categories?.FirstOrDefault(category => category.CategoryName.Equals(categoryName))?.CategoryId ?? 0;
+    }
+}

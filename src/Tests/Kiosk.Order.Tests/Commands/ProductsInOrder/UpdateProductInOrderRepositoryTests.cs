@@ -47,7 +47,7 @@
             };
 
             // Act
-            await productRepository.UpdateProductsInOrder(productDtos, OrderContextFactory.SECOND_ORDER_ID);
+            await productRepository.UpdateProductsInOrder(productDtos);
 
             // Assert
             Assert.That(productDtos.Count, Is.EqualTo(Context.ProductsInOrder

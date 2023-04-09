@@ -98,7 +98,7 @@
         public async Task<IActionResult> CreateOrder([FromBody]OrderDto order)
         {
             order.OrderId = await _orderRepository.CreateOrder(order);
-            if (order.DeliveryType == DeliveryTypeEnum.Client)
+            if (order.DeliveryType == DeliveryTypeEnum.Client || order.Products?.Any() != true)
                 return Ok();
 
             // Создаётся экземпляр задания в доставку, если указан тип получения "курьером".

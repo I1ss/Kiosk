@@ -4,12 +4,11 @@
     using Kiosk.DeliveryWebApi.Repositories;
     using Kiosk.Core.Requests;
     using Kiosk.Core.Responses;
+    using Kiosk.Core.Enums;
 
     using MassTransit;
 
     using Microsoft.AspNetCore.Mvc;
-    using Kiosk.Core.Dtos.Order;
-    using Kiosk.Core.Enums;
 
     /// <summary>
     /// Контроллер для заданий.
