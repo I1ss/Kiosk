@@ -1,0 +1,59 @@
+﻿@page "/"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@{
+    var catalog = HttpClient.GetFromJsonAsync<CatalogDto>("api/Catalog").Result;
+    // Название файла. Пока шаблон, в дальнейшем будет меняться в зависимости от кода
+    // продукта (по коду будут храниться изображения продуктов в файловом хранилище).
+    var name = "ProductTemplate";
+    // Тип расширения файла.
+    var png = "png";
+}
+@functions
+{
+    /// <summary>
+    /// Переход на страницу с описанием конкретного продукта.
+    /// </summary>
+    /// <param name="productId"> Идентификатор продукта. </param>
+    private void GetProduct(int productId)
+    {
+        NavigationManager.NavigateTo($"/product/{productId}");
+    }
+}
+
+<PageTitle>Каталог</PageTitle>
+
+<h1 align="center">Каталог</h1>
+<hr />
+
+@foreach (var category in catalog.Categories)
+{
+    <h2>@category.CategoryName</h2>
+    @foreach (var brand in category.Brands)
+    {
+        <h3>@brand.BrandName</h3>
+        <div class="row">
+        @foreach (var product in brand.Products)
+        {
+            <div class="row row-cols-1 col-md-3 text-center">
+                <div class="col" style="padding: 10px;">
+                    <div class="card">
+                        <img src="Images/@name.@png" alt="@product.ProductName" />
+                        <div class="card-body">
+                            <h5 class="card-title">@product.ProductName</h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Стоимость: @product.ProductPrice ₽</li>
+                        </ul>
+                        <div class="card-body">
+                            <button class="btn btn-primary" @onclick="(() => GetProduct(product.ProductId))">Подробнее</button>
+                            <hr/>
+                            <a asp-controller="Order" asp-action="CreateOrder" asp-route-id="@product.ProductId" class="btn btn-success">Добавить в заказ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        </div>
+    }
+}

@@ -8,7 +8,6 @@
     using MassTransit;
 
     using Microsoft.AspNetCore.Mvc;
-    using Kiosk.Core.Dtos.Order;
     using Kiosk.Core.Enums;
 
     /// <summary>

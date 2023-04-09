@@ -1,0 +1,85 @@
+﻿@page "/issues"
+@inject HttpClient HttpClient
+
+<PageTitle>Задания</PageTitle>
+
+<h1 align="center">Задания на доставку</h1>
+<hr />
+
+@if (_issues != null)
+{
+    @foreach (var issue in _issues)
+    {
+        <h3>@issue.OrderStatus</h3>
+        <h4>@issue.TotalPrice/@issue.Payment</h4>
+        <border>
+            <h4>Продукты:</h4>
+            <div class="row row-cols-3 col-md-12 text-center">
+                @foreach (var product in issue.Products)
+                {
+                    <div class="col" style="padding: 10px;">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">@product.ProductName</h5>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Стоимость: @product.ProductPrice ₽</li>
+                                <li class="list-group-item">Код продукта: @product.ProductCode</li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="card-body">
+                <button class="btn btn-primary" @onclick="(async() => await CompleteOrder(issue))">Доставить заказ</button>
+                <button class="btn btn-danger" @onclick="(async () => await CancelOrder(issue))">Вернуть заказ</button>
+            </div>
+        </border>
+    }
+}
+
+@code {
+    /// <summary>
+    /// Задания.
+    /// </summary>
+    private IEnumerable<IssueDto>? _issues;
+
+    /// <summary>
+    /// Инициализация компонента.
+    /// </summary>
+    /// <remarks> Инициализируются здесь задания. </remarks>
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await FetchOrderList();
+    }
+
+    /// <summary>
+    /// Инициализация заданий.
+    /// </summary>
+    private async Task FetchOrderList()
+    {
+        _issues = await HttpClient.GetFromJsonAsync<IEnumerable<IssueDto>>("api/issue/all");
+    }
+
+    /// <summary>
+    /// Отменить заказ задания.
+    /// </summary>
+    /// <param name="issue"> Задание. </param>
+    private async Task CancelOrder(IssueDto issue)
+    {
+        await HttpClient.PutAsJsonAsync<IssueDto>("api/issue/cancel-order", issue);
+        await FetchOrderList();
+    }
+
+    /// <summary>
+    /// Доставить (завершить) заказ задания.
+    /// </summary>
+    /// <param name="issue"> Задание. </param>
+    private async Task CompleteOrder(IssueDto issue)
+    {
+        await HttpClient.PutAsJsonAsync<IssueDto>("api/issue/completed-order", issue);
+        await FetchOrderList();
+    }
+}

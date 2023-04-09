@@ -1,0 +1,99 @@
+﻿@page "/categories"
+@inject HttpClient HttpClient
+
+<PageTitle>Категории</PageTitle>
+
+<h3>Категории: создание, обновление, удаление.</h3>
+
+<div class="row">
+    <div class="col-12 mt-5">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <td>Название</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><input class="form-control" @bind="_newCategory.CategoryName" placeholder="Название" /></td>
+                    <td class="pt-3"><a @onclick="AddCategory" href="javascript:void(0)"><i class="oi oi-plus"></i></a></td>
+                    <td></td>
+                </tr>
+                @if (_categories != null && _categories.Count != 0)
+                {
+                    foreach (var category in _categories)
+                    {
+                        <CategoryRecord Category="category" UpdateCategory="UpdateCategory" DeleteCategory="DeleteCategory" />
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Список категорий.
+    /// </summary>
+    private List<CategoryDto>? _categories;
+
+    /// <summary>
+    /// Создаваемая категория.
+    /// </summary>
+    private CategoryDto _newCategory;
+
+    /// <summary>
+    /// Инициализация компонента.
+    /// </summary>
+    /// <remarks> Инициализируются здесь категории. </remarks>
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await FetchCategoryList();
+    }
+
+    /// <summary>
+    /// Инициализация категорий.
+    /// </summary>
+    private async Task FetchCategoryList()
+    {
+        _newCategory = new CategoryDto();
+        _categories = await HttpClient.GetFromJsonAsync<List<CategoryDto>>("/api/Category/all");
+    }
+
+    /// <summary>
+    /// Создание категории.
+    /// </summary>
+    private async Task AddCategory()
+    {
+        _newCategory.Brands ??= new List<BrandDto>();
+        await HttpClient.PostAsJsonAsync("/api/Category", _newCategory);
+        await FetchCategoryList();
+        _newCategory = new CategoryDto();
+    }
+
+    /// <summary>
+    /// Обновление категории.
+    /// </summary>
+    /// <param name="category"> Обновляемая категория. </param>
+    private async Task UpdateCategory(CategoryDto category)
+    {
+        category.Brands ??= new List<BrandDto>();
+        await HttpClient.PutAsJsonAsync("/api/Category", category);
+        await FetchCategoryList();
+    }
+
+    /// <summary>
+    /// Удаление категории.
+    /// </summary>
+    /// <param name="categoryId"> Идентификатор удаляемой категории. </param>
+    private async Task DeleteCategory(int categoryId)
+    {
+        var result = await HttpClient.DeleteAsync($"/api/Category/{categoryId}");
+        await FetchCategoryList();
+    }
+}
