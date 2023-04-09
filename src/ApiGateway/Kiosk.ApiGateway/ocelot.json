@@ -1,5 +1,6 @@
 ﻿{
   "Routes": [
+    // Catalog Web API.
     {
       "UpstreamPathTemplate": "/api/Catalog",
       "UpstreamHttpMethod": [ "Get" ],
@@ -130,6 +131,7 @@
       "DownstreamPathTemplate": "/api/Product/all",
       "SwaggerKey": "catalogs"
     },
+    // Issues Web API.
     {
       "UpstreamPathTemplate": "/api/Issue",
       "UpstreamHttpMethod": [ "Get", "Post", "Put" ],
@@ -195,6 +197,7 @@
       "DownstreamPathTemplate": "/api/Issue/completed-order",
       "SwaggerKey": "issues"
     },
+    // Orders Web API.
     {
       "UpstreamPathTemplate": "/api/Order",
       "UpstreamHttpMethod": [ "Get", "Post", "Put" ],

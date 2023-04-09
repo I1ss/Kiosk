@@ -1,16 +1,138 @@
 ﻿@page "/"
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
-@{
-    var catalog = HttpClient.GetFromJsonAsync<CatalogDto>("api/Catalog").Result;
-    // Название файла. Пока шаблон, в дальнейшем будет меняться в зависимости от кода
-    // продукта (по коду будут храниться изображения продуктов в файловом хранилище).
-    var name = "ProductTemplate";
-    // Тип расширения файла.
-    var png = "png";
-}
-@functions
+
+<PageTitle>Каталог</PageTitle>
+
+<h1 align="center">Каталог</h1>
+<hr />
+
+
+@if (_catalog?.Categories?.Any() == true)
 {
+    @if (_isCreatingOrder)
+    {
+        <datalist id="deliveryTypes">
+            @foreach (var deliveryType in Enum.GetValues(typeof(DeliveryTypeEnum)))
+            {
+                <option value="@deliveryType" />
+            }
+        </datalist>
+        <input @bind="_order.DeliveryType" class="form-control" type="text" list="deliveryTypes" placeholder="Тип получения">
+        <h4>@_order.TotalPrice</h4>
+        <border>
+            <h4>Продукты:</h4>
+            <div class="row row-cols-3 col-md-12 text-center">
+                @foreach (var product in _order.Products)
+                {
+                    <div class="col" style="padding: 10px;">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">@product.ProductName</h5>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Стоимость: @product.ProductPrice ₽</li>
+                                <li class="list-group-item">Код продукта: @product.ProductCode</li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="card-body">
+                <button class="btn btn-success" @onclick="(async() => await CreateOrder())">Оформить заказ</button>
+                <button class="btn btn-danger" @onclick="CancelOrder">Отменить заказ</button>
+            </div>
+        </border>
+    }
+    else
+    {
+        <div>
+            <h4>Количество товаров в корзине: @_order.Products.Count</h4>
+            <h4>Стоимость товаров в корзине: @_order.TotalPrice</h4>
+            <button class="btn btn-success" @onclick="(() => _isCreatingOrder = true)">Создать заказ</button>
+        </div>
+    }
+
+    @foreach (var category in _catalog.Categories)
+    {
+        <h2>@category.CategoryName</h2>
+        @foreach (var brand in category.Brands)
+        {
+            <h3>@brand.BrandName</h3>
+            <div class="row">
+                @foreach (var product in brand.Products)
+                {
+                    <div class="row row-cols-1 col-md-3 text-center">
+                        <div class="col" style="padding: 10px;">
+                            <div class="card">
+                                <img src="Images/@NAME.@PNG" alt="@product.ProductName" />
+                                <div class="card-body">
+                                    <h5 class="card-title">@product.ProductName</h5>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Стоимость: @product.ProductPrice ₽</li>
+                                </ul>
+                                <div class="card-body">
+                                    <button class="btn btn-primary" @onclick="(() => GetProduct(product.ProductId))">Подробнее</button>
+                                    <hr/>
+                                    <button class="btn btn-success" @onclick="(() => AddProductInOrder(product))">Добавить в заказ</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+}
+
+@code {
+    /// <summary>
+    /// Название файла. Пока шаблон, в дальнейшем будет меняться в зависимости от кода продукта
+    /// (по коду будут храниться изображения продуктов в файловом хранилище).
+    /// </summary>
+    private const string NAME = "ProductTemplate";
+
+    /// <summary>
+    /// Тип расширения файла.
+    /// </summary>
+    private const string PNG = "png";
+
+    /// <summary>
+    /// Создаётся ли заказ в текущий момент?
+    /// </summary>
+    private bool _isCreatingOrder;
+
+    /// <summary>
+    /// Задания.
+    /// </summary>
+    private CatalogDto? _catalog;
+
+    /// <summary>
+    /// Заказ.
+    /// </summary>
+    private OrderDto _order;
+
+    /// <summary>
+    /// Инициализация компонента.
+    /// </summary>
+    /// <remarks> Инициализируются здесь задания. </remarks>
+    protected override async Task OnInitializedAsync()
+    {
+        _order = new OrderDto { Products = new List<ProductDto>() };
+        await base.OnInitializedAsync();
+        await FetchCatalog();
+    }
+
+    /// <summary>
+    /// Инициализация заданий.
+    /// </summary>
+    private async Task FetchCatalog()
+    {
+        _catalog = await HttpClient.GetFromJsonAsync<CatalogDto>("api/Catalog");
+    }
+
     /// <summary>
     /// Переход на страницу с описанием конкретного продукта.
     /// </summary>
@@ -19,41 +141,33 @@
     {
         NavigationManager.NavigateTo($"/product/{productId}");
     }
-}
 
-<PageTitle>Каталог</PageTitle>
-
-<h1 align="center">Каталог</h1>
-<hr />
-
-@foreach (var category in catalog.Categories)
-{
-    <h2>@category.CategoryName</h2>
-    @foreach (var brand in category.Brands)
+    /// <summary>
+    /// Добавить продукт в заказ.
+    /// </summary>
+    /// <param name="product"> Продукт. </param>
+    private void AddProductInOrder(ProductDto product)
     {
-        <h3>@brand.BrandName</h3>
-        <div class="row">
-        @foreach (var product in brand.Products)
-        {
-            <div class="row row-cols-1 col-md-3 text-center">
-                <div class="col" style="padding: 10px;">
-                    <div class="card">
-                        <img src="Images/@name.@png" alt="@product.ProductName" />
-                        <div class="card-body">
-                            <h5 class="card-title">@product.ProductName</h5>
-                        </div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Стоимость: @product.ProductPrice ₽</li>
-                        </ul>
-                        <div class="card-body">
-                            <button class="btn btn-primary" @onclick="(() => GetProduct(product.ProductId))">Подробнее</button>
-                            <hr/>
-                            <a asp-controller="Order" asp-action="CreateOrder" asp-route-id="@product.ProductId" class="btn btn-success">Добавить в заказ</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-        </div>
+        product.ProductId = 0;
+        _order.Products.Add(product);
+        var totalPrice = _order.Products?.Sum(product => product?.ProductPrice) ?? 0;
+        _order.TotalPrice = (double)totalPrice;
+    }
+    
+    /// <summary>
+    /// Создание заказа.
+    /// </summary>
+    private async Task CreateOrder()
+    {
+        await HttpClient.PostAsJsonAsync<OrderDto>("api/order", _order);
+        CancelOrder();
+    }
+
+    /// <summary>
+    /// Закрыть форму с заказом.
+    /// </summary>
+    private void CancelOrder()
+    {
+        _isCreatingOrder = false;
     }
 }

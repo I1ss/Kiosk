@@ -70,8 +70,6 @@
         /// <inheritdoc />
         public async Task<int> CreateOrder(OrderDto order)
         {
-            var totalPrice = order.Products?.Sum(product => product?.ProductPrice) ?? 0;
-            order.TotalPrice = (double)totalPrice;
             var dbOrder = _mapper.Map<Order>(order);
             await _orderDbContext.AddAsync(dbOrder);
             await _orderDbContext.SaveChangesAsync();
@@ -89,8 +87,6 @@
         /// <inheritdoc />
         public async Task UpdateOrder(OrderDto order)
         {
-            var totalPrice = order.Products?.Sum(product => product?.ProductPrice) ?? 0;
-            order.TotalPrice = (double)totalPrice;
             var dbOrder = _mapper.Map<Order>(order);
             _orderDbContext.Update(dbOrder);
             await _orderDbContext.SaveChangesAsync();

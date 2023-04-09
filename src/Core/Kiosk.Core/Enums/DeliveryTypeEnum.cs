@@ -1,7 +1,5 @@
 ﻿namespace Kiosk.Core.Enums
 {
-    using System.ComponentModel.DataAnnotations;
-
     /// <summary>
     /// Описание статуса доставки.
     /// </summary>
