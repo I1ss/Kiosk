@@ -1,91 +1,100 @@
 ﻿@page "/"
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
 
 <PageTitle>Каталог</PageTitle>
 
-<h1 align="center">Каталог</h1>
-<hr />
+<AuthorizeView>
+    <Authorized>
+        <h1>Привет, @context.User.Identity.Name!</h1>
+        
+        <h2 align="center">Каталог</h2>
+        <hr />
 
-
-@if (_catalog?.Categories?.Any() == true)
-{
-    @if (_isCreatingOrder)
-    {
-        <datalist id="deliveryTypes">
-            @foreach (var deliveryType in Enum.GetValues(typeof(DeliveryTypeEnum)))
-            {
-                <option value="@deliveryType" />
-            }
-        </datalist>
-        <input @bind="_order.DeliveryType" class="form-control" type="text" list="deliveryTypes" placeholder="Тип получения">
-        <h4>@_order.TotalPrice</h4>
-        <border>
-            <h4>Продукты:</h4>
-            <div class="row row-cols-3 col-md-12 text-center">
-                @foreach (var product in _order.Products)
-                {
-                    <div class="col" style="padding: 10px;">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">@product.ProductName</h5>
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">Стоимость: @product.ProductPrice ₽</li>
-                                <li class="list-group-item">Код продукта: @product.ProductCode</li>
-                            </ul>
-                        </div>
-                    </div>
-                }
-            </div>
-
-            <div class="card-body">
-                <button class="btn btn-success" @onclick="(async() => await CreateOrder())">Оформить заказ</button>
-                <button class="btn btn-danger" @onclick="CancelOrder">Отменить заказ</button>
-            </div>
-        </border>
-    }
-    else
-    {
-        <div>
-            <h4>Количество товаров в корзине: @_order.Products.Count</h4>
-            <h4>Стоимость товаров в корзине: @_order.TotalPrice</h4>
-            <button class="btn btn-success" @onclick="(() => _isCreatingOrder = true)">Создать заказ</button>
-        </div>
-    }
-
-    @foreach (var category in _catalog.Categories)
-    {
-        <h2>@category.CategoryName</h2>
-        @foreach (var brand in category.Brands)
+        @if (_catalog?.Categories?.Any() == true)
         {
-            <h3>@brand.BrandName</h3>
-            <div class="row">
-                @foreach (var product in brand.Products)
-                {
-                    <div class="row row-cols-1 col-md-3 text-center">
-                        <div class="col" style="padding: 10px;">
-                            <div class="card">
-                                <img src="Images/@NAME.@PNG" alt="@product.ProductName" />
-                                <div class="card-body">
-                                    <h5 class="card-title">@product.ProductName</h5>
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">Стоимость: @product.ProductPrice ₽</li>
-                                </ul>
-                                <div class="card-body">
-                                    <button class="btn btn-primary" @onclick="(() => GetProduct(product.ProductId))">Подробнее</button>
-                                    <hr/>
-                                    <button class="btn btn-success" @onclick="(() => AddProductInOrder(product))">Добавить в заказ</button>
+            @if (_isCreatingOrder)
+            {
+                <datalist id="deliveryTypes">
+                    @foreach (var deliveryType in Enum.GetValues(typeof(DeliveryTypeEnum)))
+                    {
+                        <option value="@deliveryType" />
+                    }
+                </datalist>
+                <input @onchange="SetDeliveryType" class="form-control" type="text" list="deliveryTypes" placeholder="Тип получения">
+                <h4>@_order.TotalPrice</h4>
+                <border>
+                    <h4>Продукты:</h4>
+                    <div class="row row-cols-3 col-md-12 text-center">
+                        @foreach (var product in _order.Products)
+                        {
+                            <div class="col" style="padding: 10px;">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@product.ProductName</h5>
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">Стоимость: @product.ProductPrice ₽</li>
+                                        <li class="list-group-item">Код продукта: @product.ProductCode</li>
+                                    </ul>
                                 </div>
                             </div>
-                        </div>
+                        }
+                    </div>
+
+                    <div class="card-body">
+                        <button class="btn btn-success" @onclick="(async() => await CreateOrder())">Оформить заказ</button>
+                        <button class="btn btn-danger" @onclick="CancelOrder">Отменить заказ</button>
+                    </div>
+                </border>
+            }
+            else
+            {
+                <div>
+                    <h4>Количество товаров в корзине: @_order.Products.Count</h4>
+                    <h4>Стоимость товаров в корзине: @_order.TotalPrice</h4>
+                    <button class="btn btn-success" @onclick="(() => _isCreatingOrder = true)">Создать заказ</button>
+                </div>
+            }
+
+            @foreach (var category in _catalog.Categories)
+            {
+                <h2>@category.CategoryName</h2>
+                @foreach (var brand in category.Brands)
+                {
+                    <h3>@brand.BrandName</h3>
+                    <div class="row">
+                        @foreach (var product in brand.Products)
+                        {
+                            <div class="row row-cols-1 col-md-3 text-center">
+                                <div class="col" style="padding: 10px;">
+                                    <div class="card">
+                                        <img src="Images/@NAME.@PNG" alt="@product.ProductName" />
+                                        <div class="card-body">
+                                            <h5 class="card-title">@product.ProductName</h5>
+                                        </div>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">Стоимость: @product.ProductPrice ₽</li>
+                                        </ul>
+                                        <div class="card-body">
+                                            <button class="btn btn-primary" @onclick="(() => GetProduct(product.ProductId))">Подробнее</button>
+                                            <hr />
+                                            <button class="btn btn-success" @onclick="(() => AddProductInOrder(product))">Добавить в заказ</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
                 }
-            </div>
+            }
         }
-    }
-}
+    </Authorized>
+    <NotAuthorized>
+        <h1>Привет, Гость! Пройдите регистрацию или авторизуйтесь, чтобы просматривать каталог!</h1>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     /// <summary>
@@ -115,6 +124,11 @@
     private OrderDto _order;
 
     /// <summary>
+    /// Пользователь.
+    /// </summary>
+    private ClaimsPrincipal _user;
+
+    /// <summary>
     /// Инициализация компонента.
     /// </summary>
     /// <remarks> Инициализируются здесь задания. </remarks>
@@ -123,6 +137,10 @@
         _order = new OrderDto { Products = new List<ProductDto>() };
         await base.OnInitializedAsync();
         await FetchCatalog();
+
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        _user = authstate.User;
+        var name = _user.Identity.Name;
     }
 
     /// <summary>
@@ -169,5 +187,16 @@
     private void CancelOrder()
     {
         _isCreatingOrder = false;
+    }
+
+    /// <summary>
+    /// Установить тип доставки по строке.
+    /// </summary>
+    /// <param name="args"> Тип доставки. </param>
+    private void SetDeliveryType(ChangeEventArgs args)
+    {
+        var deliveryTypeArgs = args?.Value?.ToString();
+        Enum.TryParse(deliveryTypeArgs, out DeliveryTypeEnum deliveryType);
+        _order.DeliveryType = deliveryType;
     }
 }

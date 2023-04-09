@@ -1,0 +1,55 @@
+﻿@page "/login"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider authStateProvider
+
+<PageTitle>Войти</PageTitle>
+
+<h3>Войти в систему</h3>
+
+<div class="row">
+    <div class="col-12 mt-5">
+        <input class="form-control" @bind="_user.Name" placeholder="Логин" />
+        <input class="form-control" @bind="_user.Password" placeholder="Пароль" />
+        <div>
+            <button class="btn btn-success" @onclick="async () => { await LoginUser(); }">Войти в систему</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Создаваемый пользователь.
+    /// </summary>
+    private UserDto _user;
+
+    /// <summary>
+    /// Инициализация компонента.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        _user = new UserDto();
+        await base.OnInitializedAsync();
+    }
+
+    /// <summary>
+    /// Авторизовать пользователя.
+    /// </summary>
+    private async Task LoginUser()
+    {
+        var response = await HttpClient.PostAsJsonAsync("/api/User/login", _user);
+        var user = await response.Content.ReadFromJsonAsync<UserDto>();
+
+        if (user?.IsAuthentication == true)
+        {
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(new UserDto
+            {
+                Name = user.Name,
+                Role = user.Role
+            });
+        }
+
+        NavigationManager.NavigateTo("/", true);
+    }
+}
