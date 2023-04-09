@@ -3,62 +3,69 @@
 
 <PageTitle>Бренды</PageTitle>
 
-<h3>Бренды: создание, обновление, удаление.</h3>
+<AuthorizeView Roles="Admin,Seller">
+    <Authorized>
+        <h3>Бренды: создание, обновление, удаление.</h3>
 
-<div class="row">
-    <div class="col-12 mt-5">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <td>Название</td>
-                    <td>Категория</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                </thead>
-                <tbody>
-                @if (_categories != null && _categories.Count != 0)
-                {
-                    <datalist id="categoriesList">
-                        @foreach (var category in _categories)
-                        {
-                            <option value="@category.CategoryName" />
-                        }
-                    </datalist>
-                }
-                else
-                {
-                    <tr>
-                        <td class="text-center" colspan="5">Нет категорий, для которых можно создавать бренды! Добавьте сначала категории.</td>
-                    </tr>
-                }
-                <tr>
-                    <td><input class="form-control" @bind="_newBrand.BrandName" placeholder="Название"/></td>
-                    <td><input @onchange="SetCategoryId" class="form-control" type="text" list="categoriesList" placeholder="Категория"></td>
-                    <td class="pt-3"><a @onclick="AddBrand" href="javascript:void(0)"><i class="oi oi-plus"></i></a></td>
-                    <td></td>
-                </tr>
-                @if (_brands != null && _brands.Count != 0)
-                {
-                    foreach (var brand in _brands)
-                    {
-                        var categoryName = _categories?.FirstOrDefault(category => category.CategoryId
-                                .Equals(brand.CategoryId))?.CategoryName;
-                        <BrandRecord Categories="_categories" CategoryName="@categoryName" Brand="brand" UpdateBrand="UpdateBrand" DeleteBrand="DeleteBrand"/>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td class="text-center" colspan="5">Нет брендов для отображения.</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
+        <div class="row">
+            <div class="col-12 mt-5">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <td>Название</td>
+                                <td>Категория</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (_categories != null && _categories.Count != 0)
+                            {
+                                <datalist id="categoriesList">
+                                    @foreach (var category in _categories)
+                                    {
+                                        <option value="@category.CategoryName" />
+                                    }
+                                </datalist>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="text-center" colspan="5">Нет категорий, для которых можно создавать бренды! Добавьте сначала категории.</td>
+                                </tr>
+                            }
+                            <tr>
+                                <td><input class="form-control" @bind="_newBrand.BrandName" placeholder="Название" /></td>
+                                <td><input @onchange="SetCategoryId" class="form-control" type="text" list="categoriesList" placeholder="Категория"></td>
+                                <td class="pt-3"><a @onclick="AddBrand" href="javascript:void(0)"><i class="oi oi-plus"></i></a></td>
+                                <td></td>
+                            </tr>
+                            @if (_brands != null && _brands.Count != 0)
+                            {
+                                foreach (var brand in _brands)
+                                {
+                                    var categoryName = _categories?.FirstOrDefault(category => category.CategoryId
+                                    .Equals(brand.CategoryId))?.CategoryName;
+                                    <BrandRecord Categories="_categories" CategoryName="@categoryName" Brand="brand" UpdateBrand="UpdateBrand" DeleteBrand="DeleteBrand" />
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="text-center" colspan="5">Нет брендов для отображения.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <h1>К сожалению, у вас нет доступа к этой странице.</h1>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     /// <summary>

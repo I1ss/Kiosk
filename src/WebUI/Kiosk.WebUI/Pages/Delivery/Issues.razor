@@ -3,41 +3,48 @@
 
 <PageTitle>Задания</PageTitle>
 
-<h1 align="center">Задания на доставку</h1>
-<hr />
+<AuthorizeView Roles="Admin,Courier">
+    <Authorized>
+        <h1 align="center">Задания на доставку</h1>
+        <hr />
 
-@if (_issues != null)
-{
-    @foreach (var issue in _issues)
-    {
-        <h3>@issue.OrderStatus</h3>
-        <h4>@issue.TotalPrice/@issue.Payment</h4>
-        <border>
-            <h4>Продукты:</h4>
-            <div class="row row-cols-3 col-md-12 text-center">
-                @foreach (var product in issue.Products)
-                {
-                    <div class="col" style="padding: 10px;">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">@product.ProductName</h5>
+        @if (_issues != null)
+        {
+            @foreach (var issue in _issues)
+            {
+                <h3>@issue.OrderStatus</h3>
+                <h4>@issue.TotalPrice/@issue.Payment</h4>
+                <border>
+                    <h4>Продукты:</h4>
+                    <div class="row row-cols-3 col-md-12 text-center">
+                        @foreach (var product in issue.Products)
+                        {
+                            <div class="col" style="padding: 10px;">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@product.ProductName</h5>
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">Стоимость: @product.ProductPrice ₽</li>
+                                        <li class="list-group-item">Код продукта: @product.ProductCode</li>
+                                    </ul>
+                                </div>
                             </div>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">Стоимость: @product.ProductPrice ₽</li>
-                                <li class="list-group-item">Код продукта: @product.ProductCode</li>
-                            </ul>
-                        </div>
+                        }
                     </div>
-                }
-            </div>
 
-            <div class="card-body">
-                <button class="btn btn-success" @onclick="(async() => await CompleteOrder(issue))">Доставить заказ</button>
-                <button class="btn btn-danger" @onclick="(async () => await CancelOrder(issue))">Вернуть заказ</button>
-            </div>
-        </border>
-    }
-}
+                    <div class="card-body">
+                        <button class="btn btn-success" @onclick="(async() => await CompleteOrder(issue))">Доставить заказ</button>
+                        <button class="btn btn-danger" @onclick="(async () => await CancelOrder(issue))">Вернуть заказ</button>
+                    </div>
+                </border>
+            }
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h1>К сожалению, у вас нет доступа к этой странице.</h1>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     /// <summary>

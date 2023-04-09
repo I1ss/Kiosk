@@ -1,4 +1,7 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Киоск</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -13,21 +16,42 @@
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Каталог
             </NavLink>
-            <NavLink class="nav-link" href="/categories" Match="NavLinkMatch.All">
-                <span class="oi oi-arrow-circle-bottom" aria-hidden="true"></span> Категории
-            </NavLink>
-            <NavLink class="nav-link" href="/brands" Match="NavLinkMatch.All">
-                <span class="oi oi-dashboard" aria-hidden="true"></span> Бренды
-            </NavLink>
-            <NavLink class="nav-link" href="/products" Match="NavLinkMatch.All">
-                <span class="oi oi-project" aria-hidden="true"></span> Продукты
-            </NavLink>
-            <NavLink class="nav-link" href="/orders" Match="NavLinkMatch.All">
-                <span class="oi oi-file" aria-hidden="true"></span> Заказы
-            </NavLink>
-            <NavLink class="nav-link" href="/issues" Match="NavLinkMatch.All">
-                <span class="oi oi-task" aria-hidden="true"></span> Задания
-            </NavLink>
+            <AuthorizeView Roles="Admin,Seller">
+                <Authorized>
+                    <NavLink class="nav-link" href="/categories" Match="NavLinkMatch.All">
+                        <span class="oi oi-arrow-circle-bottom" aria-hidden="true"></span> Категории
+                    </NavLink>
+                    <NavLink class="nav-link" href="/brands" Match="NavLinkMatch.All">
+                        <span class="oi oi-dashboard" aria-hidden="true"></span> Бренды
+                    </NavLink>
+                    <NavLink class="nav-link" href="/products" Match="NavLinkMatch.All">
+                        <span class="oi oi-project" aria-hidden="true"></span> Продукты
+                    </NavLink>
+                    <NavLink class="nav-link" href="/orders" Match="NavLinkMatch.All">
+                        <span class="oi oi-file" aria-hidden="true"></span> Заказы
+                    </NavLink>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView Roles="Admin,Courier">
+                <Authorized>
+                    <NavLink class="nav-link" href="/issues" Match="NavLinkMatch.All">
+                        <span class="oi oi-task" aria-hidden="true"></span> Задания
+                    </NavLink>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView>
+                <Authorized>
+                    <a @onclick="Logout" href="javascript:void(0)">Выйти</a>
+                </Authorized>
+                <NotAuthorized>
+                    <NavLink class="nav-link" href="/login" Match="NavLinkMatch.All">
+                        <span class="oi oi-account-login" aria-hidden="true"></span> Войти
+                    </NavLink>
+                    <NavLink class="nav-link" href="/register" Match="NavLinkMatch.All">
+                        <span class="oi oi-person" aria-hidden="true"></span> Регистрация
+                    </NavLink>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
     </nav>
 </div>
@@ -40,5 +64,12 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private async Task Logout()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        navManager.NavigateTo("/", true);
     }
 }

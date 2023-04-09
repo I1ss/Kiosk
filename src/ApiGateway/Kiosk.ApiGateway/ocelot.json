@@ -1,5 +1,32 @@
 ﻿{
   "Routes": [
+    // Authentication Web API.
+    {
+      "UpstreamPathTemplate": "/api/User/login",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5102
+        }
+      ],
+      "DownstreamPathTemplate": "/api/User/login",
+      "SwaggerKey": "users"
+    },
+    {
+      "UpstreamPathTemplate": "/api/User/register",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5102
+        }
+      ],
+      "DownstreamPathTemplate": "/api/User/register",
+      "SwaggerKey": "users"
+    },
     // Catalog Web API.
     {
       "UpstreamPathTemplate": "/api/Catalog",
@@ -279,6 +306,16 @@
           "Name": "Orders API",
           "Version": "v1",
           "Url": "http://localhost:5007/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "users",
+      "Config": [
+        {
+          "Name": "Users API",
+          "Version": "v1",
+          "Url": "http://localhost:5102/swagger/v1/swagger.json"
         }
       ]
     }
