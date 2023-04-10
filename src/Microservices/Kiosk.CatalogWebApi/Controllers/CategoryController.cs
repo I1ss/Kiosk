@@ -1,6 +1,7 @@
 ﻿namespace Kiosk.CatalogWebApi.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Authorization;
 
     using Kiosk.CatalogWebApi.Repositories;
     using Kiosk.Core.Dtos.Catalog;
@@ -10,6 +11,7 @@
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Seller")]
     public class CategoryController : ControllerBase
     {
         /// <summary>

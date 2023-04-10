@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.15" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Core\Kiosk.Core\Kiosk.Core.csproj" />
-    <ProjectReference Include="..\..\Microservices\Kiosk.AuthenticationWebApi\Kiosk.AuthenticationWebApi.csproj" />
   </ItemGroup>
 
 </Project>

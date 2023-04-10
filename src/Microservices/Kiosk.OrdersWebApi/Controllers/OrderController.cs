@@ -9,6 +9,7 @@
     using MassTransit;
 
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
     /// Контроллер для заказов.
@@ -63,6 +64,7 @@
         [HttpGet("{orderId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<OrderDto> GetOrder(int orderId)
         {
             var order = await _orderRepository.GetOrder(orderId);
@@ -79,6 +81,7 @@
         [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IEnumerable<OrderDto>> GetOrders()
         {
             var orders = await _orderRepository.GetOrders();
@@ -95,6 +98,7 @@
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody]OrderDto order)
         {
             order.OrderId = await _orderRepository.CreateOrder(order);
@@ -119,6 +123,7 @@
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IActionResult> UpdateOrder([FromBody]OrderDto order)
         {
             await _orderRepository.UpdateOrder(order);
@@ -140,6 +145,7 @@
         [HttpDelete("{orderId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IActionResult> DeleteOrder(int orderId)
         {
             await _orderRepository.DeleteOrder(orderId);
@@ -160,6 +166,7 @@
         [HttpPut("cancel-order")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller,Courier")]
         public async Task<IActionResult> CancelOrder([FromBody]OrderDto order)
         {
             order.OrderStatus = OrderStatusEnum.Canceled;

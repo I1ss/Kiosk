@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Kiosk.AuthenticationWebApi.Repositories;
+    using Kiosk.JwtAuthenticationManager;
     using Kiosk.Core.Dtos.Authentication;
 
     /// <summary>
@@ -12,6 +13,8 @@
     [ApiController]
     public class UserController : Controller
     {
+        private readonly JwtTokenHandler _jwtTokenHandler;
+
         /// <summary>
         /// Репозиторий пользователей.
         /// </summary>
@@ -21,9 +24,10 @@
         /// Конструктор контроллера для пользователей.
         /// </summary>
         /// <param name="userRepository"> Репозиторий пользователей. </param>
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserRepository userRepository, JwtTokenHandler jwtTokenHandler)
         {
             _userRepository = userRepository;
+            _jwtTokenHandler = jwtTokenHandler;
         }
 
         /// <summary>
@@ -38,9 +42,10 @@
         public async Task<IActionResult> Register(UserDto user)
         {
             user.IsAuthentication = await _userRepository.Register(user);
+            var userWithToken = _jwtTokenHandler.GenerateJwtToken(user);
+
             return Ok(user);
         }
-
         /// <summary>
         /// Войти в систему. 
         /// </summary>
@@ -51,7 +56,9 @@
         public async Task<IActionResult> Login(UserDto user)
         {
             user.IsAuthentication = await _userRepository.Login(user);
-            return Ok(user);
+            var userWithToken = _jwtTokenHandler.GenerateJwtToken(user);
+
+            return Ok(userWithToken);
         }
     }
 }

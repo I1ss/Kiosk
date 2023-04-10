@@ -1,7 +1,8 @@
 ﻿@page "/register"
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
-@inject AuthenticationStateProvider authStateProvider
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILocalStorageService LocalStorageService
 
 <PageTitle>Зарегистрироваться</PageTitle>
 
@@ -36,7 +37,7 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        _user = new UserDto();
+        _user = new UserDto { Token = string.Empty };
         await base.OnInitializedAsync();
     }
 
@@ -48,15 +49,12 @@
         var response = await HttpClient.PostAsJsonAsync("/api/User/register", _user);
         var user = await response.Content.ReadFromJsonAsync<UserDto>();
 
-        if (user?.IsAuthentication == true)
-        {
-            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-            await customAuthStateProvider.UpdateAuthenticationState(new UserDto
-            {
-                Name = user.Name,
-                Role = user.Role
-            });
-        }
+        if (user?.IsAuthentication != true)
+            return;
+
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(user);
+        await LocalStorageService.SetItem("user", user);
 
         NavigationManager.NavigateTo("/", true);
     }

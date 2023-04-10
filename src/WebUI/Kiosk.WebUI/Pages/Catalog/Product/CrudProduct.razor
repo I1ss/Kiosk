@@ -1,5 +1,6 @@
 ﻿@page "/products"
 @inject HttpClient HttpClient
+@inject ILocalStorageService LocalStorageService
 
 <PageTitle>Продукты</PageTitle>
 
@@ -84,16 +85,19 @@
     /// <summary>
     /// Создаваемый продукт.
     /// </summary>
-    private ProductDto _newProduct;
+    private ProductDto _newProduct = new ProductDto();
 
     /// <summary>
     /// Инициализация компонента.
     /// </summary>
     /// <remarks> Инициализируются здесь бренды и продукты. </remarks>
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnInitializedAsync();
+        if (!firstRender)
+            return;
+
         await FetchProductList();
+        StateHasChanged();
     }
 
     /// <summary>
@@ -102,8 +106,17 @@
     private async Task FetchProductList()
     {
         _newProduct = new ProductDto();
-        _products = await HttpClient.GetFromJsonAsync<List<ProductDto>>("/api/Product/all");
-        _brands = await HttpClient.GetFromJsonAsync<List<BrandDto>>("/api/Brand/all");
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/Brand/all");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        var responseBrands = await HttpClient.SendAsync(request);
+        _brands = await responseBrands.Content.ReadFromJsonAsync<List<BrandDto>>();
+
+        request = new HttpRequestMessage(HttpMethod.Get, "/api/Product/all");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        var responseCategories = await HttpClient.SendAsync(request);
+        _products = await responseCategories.Content.ReadFromJsonAsync<List<ProductDto>>();
     }
 
     /// <summary>
@@ -112,7 +125,12 @@
     private async Task AddProduct()
     {
         var brandId = _newProduct.BrandId;
-        await HttpClient.PostAsJsonAsync("/api/Product", _newProduct);
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/Product");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(_newProduct), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
         await FetchProductList();
         _newProduct = new ProductDto { BrandId = brandId };
     }
@@ -123,7 +141,12 @@
     /// <param name="product"> Обновляемые продукт. </param>
     private async Task UpdateProduct(ProductDto product)
     {
-        await HttpClient.PutAsJsonAsync("/api/Product", product);
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Put, "/api/Product");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(product), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
         await FetchProductList();
     }
 
@@ -133,7 +156,11 @@
     /// <param name="productId"> Идентификатор продукта. </param>
     private async Task DeleteProduct(int productId)
     {
-        var result = await HttpClient.DeleteAsync($"/api/Product/{productId}");
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"/api/Product/{productId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+
+        var response = await HttpClient.SendAsync(request);
         await FetchProductList();
     }
 

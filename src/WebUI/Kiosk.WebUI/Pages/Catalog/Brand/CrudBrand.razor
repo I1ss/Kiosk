@@ -1,12 +1,12 @@
 ﻿@page "/brands"
 @inject HttpClient HttpClient
+@inject ILocalStorageService LocalStorageService
 
 <PageTitle>Бренды</PageTitle>
 
 <AuthorizeView Roles="Admin,Seller">
     <Authorized>
         <h3>Бренды: создание, обновление, удаление.</h3>
-
         <div class="row">
             <div class="col-12 mt-5">
                 <div class="table-responsive">
@@ -81,16 +81,19 @@
     /// <summary>
     /// Создаваемый бренд.
     /// </summary>
-    private BrandDto _newBrand;
+    private BrandDto _newBrand = new BrandDto();
 
     /// <summary>
     /// Инициализация компонента.
     /// </summary>
     /// <remarks> Инициализируются здесь бренды и категории. </remarks>
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnInitializedAsync();
+        if (!firstRender)
+            return;
+
         await FetchBrandList();
+        StateHasChanged();
     }
 
     /// <summary>
@@ -99,8 +102,17 @@
     private async Task FetchBrandList()
     {
         _newBrand = new BrandDto();
-        _brands = await HttpClient.GetFromJsonAsync<List<BrandDto>>("/api/Brand/all");
-        _categories = await HttpClient.GetFromJsonAsync<List<CategoryDto>>("/api/Category/all");
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/Brand/all");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        var responseBrands = await HttpClient.SendAsync(request);
+        _brands = await responseBrands.Content.ReadFromJsonAsync<List<BrandDto>>();
+
+        request = new HttpRequestMessage(HttpMethod.Get, "/api/Category/all");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        var responseCategories = await HttpClient.SendAsync(request);
+        _categories = await responseCategories.Content.ReadFromJsonAsync<List<CategoryDto>>();
     }
 
     /// <summary>
@@ -108,9 +120,14 @@
     /// </summary>
     private async Task AddBrand()
     {
-        var categoryId = _newBrand.CategoryId;
         _newBrand.Products ??= new List<ProductDto>();
-        await HttpClient.PostAsJsonAsync("/api/Brand", _newBrand);
+        var categoryId = _newBrand.CategoryId;
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/Brand");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(_newBrand), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
         await FetchBrandList();
         _newBrand = new BrandDto { CategoryId = categoryId };
     }
@@ -122,7 +139,12 @@
     private async Task UpdateBrand(BrandDto brand)
     {
         brand.Products ??= new List<ProductDto>();
-        await HttpClient.PutAsJsonAsync("/api/Brand", brand);
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Put, "/api/Brand");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(brand), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
         await FetchBrandList();
     }
 
@@ -132,7 +154,11 @@
     /// <param name="brandId"> Идентификатор бренда. </param>
     private async Task DeleteBrand(int brandId)
     {
-        var result = await HttpClient.DeleteAsync($"/api/Brand/{brandId}");
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"/api/Brand/{brandId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+
+        var response = await HttpClient.SendAsync(request);
         await FetchBrandList();
     }
 

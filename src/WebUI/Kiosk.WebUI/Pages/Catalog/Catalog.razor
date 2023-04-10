@@ -1,7 +1,7 @@
 ﻿@page "/"
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
-@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject ILocalStorageService LocalStorageService
 
 <PageTitle>Каталог</PageTitle>
 
@@ -137,14 +137,10 @@
         _order = new OrderDto { Products = new List<ProductDto>() };
         await base.OnInitializedAsync();
         await FetchCatalog();
-
-        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        _user = authstate.User;
-        var name = _user.Identity.Name;
     }
 
     /// <summary>
-    /// Инициализация заданий.
+    /// Инициализация каталога.
     /// </summary>
     private async Task FetchCatalog()
     {
@@ -177,7 +173,13 @@
     /// </summary>
     private async Task CreateOrder()
     {
-        await HttpClient.PostAsJsonAsync<OrderDto>("api/order", _order);
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/order");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(_order), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
+        _order = new OrderDto { Products = new List<ProductDto>() };
         CancelOrder();
     }
 

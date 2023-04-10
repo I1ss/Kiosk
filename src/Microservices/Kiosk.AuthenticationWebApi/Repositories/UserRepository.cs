@@ -62,5 +62,14 @@
             userDto.Role = user.Role;
             return true;
         }
+
+        /// <inheritdoc />
+        public async Task<List<UserDto>> GetUsers()
+        {
+            var usersDb = await _dbaAuthenticationDbContext.Users.ToListAsync();
+            var users = _mapper.Map<List<UserDto>>(usersDb);
+
+            return users;
+        }
     }
 }
