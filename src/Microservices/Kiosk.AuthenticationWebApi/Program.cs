@@ -4,12 +4,13 @@ using System.Reflection;
 
 using Kiosk.AuthenticationWebApi;
 using Kiosk.AuthenticationWebApi.Repositories;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Kiosk.JwtAuthenticationManager;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSingleton<JwtTokenHandler>();
 builder.Services.AddSwaggerGen(options =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -48,6 +49,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

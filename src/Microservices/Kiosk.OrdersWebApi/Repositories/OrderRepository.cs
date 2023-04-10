@@ -47,7 +47,7 @@
             var blOrder = _mapper.Map<OrderDto>(order);
 
             if (blOrder == null)
-                return null;
+                return default;
 
             var products = await _productInOrderRepository.GetProductsInOrder();
             blOrder.Products = products.Where(product => product.OrderId == orderId)?.ToList() ?? new List<ProductDto>();
