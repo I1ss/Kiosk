@@ -1,5 +1,6 @@
 ﻿@page "/orders"
 @inject HttpClient HttpClient
+@inject ILocalStorageService LocalStorageService
 
 <PageTitle>Заказы</PageTitle>
 
@@ -56,10 +57,13 @@
     /// Инициализация компонента.
     /// </summary>
     /// <remarks> Инициализируются здесь заказы. </remarks>
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnInitializedAsync();
+        if (!firstRender)
+            return;
+
         await FetchOrderList();
+        StateHasChanged();
     }
 
     /// <summary>
@@ -67,7 +71,12 @@
     /// </summary>
     private async Task FetchOrderList()
     {
-        _orders = await HttpClient.GetFromJsonAsync<IEnumerable<OrderDto>>("api/Order/all");
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Get, "api/Order/all");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+
+        var response = await HttpClient.SendAsync(request);
+        _orders = await response.Content.ReadFromJsonAsync<IEnumerable<OrderDto>>();
     }
 
     /// <summary>
@@ -76,7 +85,12 @@
     /// <param name="order"> Заказ. </param>
     private async Task CancelOrder(OrderDto order)
     {
-        await HttpClient.PutAsJsonAsync<OrderDto>("api/order/cancel-order", order);
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Put, "api/order/cancel-order");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(order), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
         await FetchOrderList();
     }
 
@@ -86,7 +100,11 @@
     /// <param name="orderId"> Идентификатор заказа. </param>
     private async Task DeleteOrder(int orderId)
     {
-        await HttpClient.DeleteAsync($"api/order/{orderId}");
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"api/order/{orderId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+
+        var response = await HttpClient.SendAsync(request);
         await FetchOrderList();
     }
 }

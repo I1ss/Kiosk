@@ -1,3 +1,5 @@
+using Kiosk.JwtAuthenticationManager;
+
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
@@ -8,6 +10,7 @@ builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
 builder.Services.AddSwaggerForOcelot(builder.Configuration);
 builder.Services.AddControllersWithViews();
 builder.Services.AddOcelot(builder.Configuration);
+builder.Services.AddCustomJwtAuthentication();
 
 var app = builder.Build();
 app.UseStaticFiles();

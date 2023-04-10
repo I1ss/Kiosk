@@ -1,6 +1,7 @@
 ﻿namespace Kiosk.CatalogWebApi.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Authorization;
 
     using Kiosk.CatalogWebApi.Repositories;
     using Kiosk.Core.Dtos.Catalog;
@@ -37,6 +38,7 @@
         [HttpGet("{productId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize]
         public async Task<ProductDto> GetProduct(int productId)
         {
             var product = await _productRepository.GetProduct(productId);
@@ -53,6 +55,7 @@
         [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize]
         public async Task<IEnumerable<ProductDto>> GetProducts()
         {
             var products = await _productRepository.GetProducts();
@@ -69,6 +72,7 @@
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IActionResult> CreateProduct([FromBody]ProductDto product)
         {
             await _productRepository.CreateProduct(product);
@@ -85,6 +89,7 @@
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IActionResult> UpdateProduct([FromBody]ProductDto product)
         {
             await _productRepository.UpdateProduct(product);
@@ -101,6 +106,7 @@
         [HttpDelete("{productId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IActionResult> DeleteProduct(int productId)
         {
             await _productRepository.DeleteProduct(productId);

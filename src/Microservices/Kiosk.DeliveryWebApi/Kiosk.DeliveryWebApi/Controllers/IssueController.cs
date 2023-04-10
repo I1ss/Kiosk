@@ -9,12 +9,14 @@
     using MassTransit;
 
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
     /// Контроллер для заданий.
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Courier")]
     public class IssueController : ControllerBase
     {
         /// <summary>

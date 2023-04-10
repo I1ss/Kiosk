@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\Kiosk.Core\Kiosk.Core.csproj" />
+    <ProjectReference Include="..\..\..\Core\Kiosk.JwtAuthenticationManager\Kiosk.JwtAuthenticationManager.csproj" />
   </ItemGroup>
 
 </Project>

@@ -16,5 +16,11 @@
         /// Авторизовать пользователя. 
         /// </summary>
         Task<bool> Login(UserDto user);
+
+        /// <summary>
+        /// Получить всех пользователей из базы данных.
+        /// </summary>
+        /// <returns> Список пользователей. </returns>
+        Task<List<UserDto>> GetUsers();
     }
 }

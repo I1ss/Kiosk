@@ -15,6 +15,19 @@
       "SwaggerKey": "users"
     },
     {
+      "UpstreamPathTemplate": "/api/User/authenticate",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5102
+        }
+      ],
+      "DownstreamPathTemplate": "/api/User/authenticate",
+      "SwaggerKey": "users"
+    },
+    {
       "UpstreamPathTemplate": "/api/User/register",
       "UpstreamHttpMethod": [ "Post" ],
       "DownstreamScheme": "http",
@@ -52,7 +65,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Brand",
-      "SwaggerKey": "catalogs"
+      "SwaggerKey": "catalogs",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Brand/{brandId}",
@@ -65,7 +82,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Brand/{brandId}",
-      "SwaggerKey": "catalogs"
+      "SwaggerKey": "catalogs",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Brand/all",
@@ -78,7 +99,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Brand/all",
-      "SwaggerKey": "catalogs"
+      "SwaggerKey": "catalogs",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Category",
@@ -91,7 +116,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Category",
-      "SwaggerKey": "catalogs"
+      "SwaggerKey": "catalogs",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Category/{categoryId}",
@@ -104,7 +133,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Category/{categoryId}",
-      "SwaggerKey": "catalogs"
+      "SwaggerKey": "catalogs",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Category/all",
@@ -117,7 +150,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Category/all",
-      "SwaggerKey": "catalogs"
+      "SwaggerKey": "catalogs",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Product",
@@ -130,7 +167,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Product",
-      "SwaggerKey": "catalogs"
+      "SwaggerKey": "catalogs",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Product/{productId}",
@@ -143,7 +184,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Product/{productId}",
-      "SwaggerKey": "catalogs"
+      "SwaggerKey": "catalogs",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Product/all",
@@ -156,7 +201,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Product/all",
-      "SwaggerKey": "catalogs"
+      "SwaggerKey": "catalogs",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     // Issues Web API.
     {
@@ -170,7 +219,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Issue",
-      "SwaggerKey": "issues"
+      "SwaggerKey": "issues",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Issue/{issueId}",
@@ -183,7 +236,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Issue/{issueId}",
-      "SwaggerKey": "issues"
+      "SwaggerKey": "issues",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Issue/all",
@@ -196,7 +253,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Issue/all",
-      "SwaggerKey": "issues"
+      "SwaggerKey": "issues",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Issue/cancel-order",
@@ -209,7 +270,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Issue/cancel-order",
-      "SwaggerKey": "issues"
+      "SwaggerKey": "issues",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Issue/completed-order",
@@ -222,7 +287,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Issue/completed-order",
-      "SwaggerKey": "issues"
+      "SwaggerKey": "issues",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     // Orders Web API.
     {
@@ -236,7 +305,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Order",
-      "SwaggerKey": "orders"
+      "SwaggerKey": "orders",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Order/{orderId}",
@@ -249,7 +322,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Order/{orderId}",
-      "SwaggerKey": "orders"
+      "SwaggerKey": "orders",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Order/all",
@@ -262,7 +339,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Order/all",
-      "SwaggerKey": "orders"
+      "SwaggerKey": "orders",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/Order/cancel-order",
@@ -275,7 +356,11 @@
         }
       ],
       "DownstreamPathTemplate": "/api/Order/cancel-order",
-      "SwaggerKey": "orders"
+      "SwaggerKey": "orders",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     }
   ],
   "SwaggerEndPoints": [

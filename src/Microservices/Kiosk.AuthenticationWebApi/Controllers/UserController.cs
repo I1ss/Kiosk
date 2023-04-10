@@ -1,9 +1,14 @@
-﻿namespace Kiosk.AuthenticationWebApi.Controllers
+﻿
+namespace Kiosk.AuthenticationWebApi.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
 
     using Kiosk.AuthenticationWebApi.Repositories;
+    using Kiosk.AuthenticationWebApi.Helpers;
+    using Kiosk.JwtAuthenticationManager;
     using Kiosk.Core.Dtos.Authentication;
+    using Kiosk.Core.Requests;
+    using Kiosk.Core.Responses;
 
     /// <summary>
     /// Контроллер для пользователей.
@@ -12,6 +17,8 @@
     [ApiController]
     public class UserController : Controller
     {
+        private readonly JwtTokenHandler _jwtTokenHandler;
+
         /// <summary>
         /// Репозиторий пользователей.
         /// </summary>
@@ -21,9 +28,10 @@
         /// Конструктор контроллера для пользователей.
         /// </summary>
         /// <param name="userRepository"> Репозиторий пользователей. </param>
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserRepository userRepository, JwtTokenHandler jwtTokenHandler)
         {
             _userRepository = userRepository;
+            _jwtTokenHandler = jwtTokenHandler;
         }
 
         /// <summary>
@@ -38,7 +46,24 @@
         public async Task<IActionResult> Register(UserDto user)
         {
             user.IsAuthentication = await _userRepository.Register(user);
+            await Authenticate(user);
+
             return Ok(user);
+        }
+
+        /// <summary>
+        /// Аутентификация.
+        /// </summary>
+        /// <param name="user"> ДТО пользователя. </param>
+        /// <returns> Пользователь или неудачная аутентификация. </returns>
+        [HttpPost("authenticate")]
+        public async Task<ActionResult<UserDto?>> Authenticate(UserDto user)
+        {
+            var userWithToken = _jwtTokenHandler.GenerateJwtToken(user);
+            if (userWithToken == null) 
+                return Unauthorized();
+
+            return userWithToken;
         }
 
         /// <summary>
@@ -51,7 +76,9 @@
         public async Task<IActionResult> Login(UserDto user)
         {
             user.IsAuthentication = await _userRepository.Login(user);
-            return Ok(user);
+            var userWithToken = await Authenticate(user);
+
+            return Ok(userWithToken?.Value);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿@page "/issues"
 @inject HttpClient HttpClient
+@inject ILocalStorageService LocalStorageService
 
 <PageTitle>Задания</PageTitle>
 
@@ -51,23 +52,31 @@
     /// Задания.
     /// </summary>
     private IEnumerable<IssueDto>? _issues;
-
+    
     /// <summary>
     /// Инициализация компонента.
     /// </summary>
     /// <remarks> Инициализируются здесь задания. </remarks>
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnInitializedAsync();
-        await FetchOrderList();
+        if (!firstRender)
+            return;
+
+        await FetchIssueList();
+        StateHasChanged();
     }
 
     /// <summary>
     /// Инициализация заданий.
     /// </summary>
-    private async Task FetchOrderList()
+    private async Task FetchIssueList()
     {
-        _issues = await HttpClient.GetFromJsonAsync<IEnumerable<IssueDto>>("api/issue/all");
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Get, "api/issue/all");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+
+        var response = await HttpClient.SendAsync(request);
+        _issues = await response.Content.ReadFromJsonAsync<IEnumerable<IssueDto>>();
     }
 
     /// <summary>
@@ -76,8 +85,13 @@
     /// <param name="issue"> Задание. </param>
     private async Task CancelOrder(IssueDto issue)
     {
-        await HttpClient.PutAsJsonAsync<IssueDto>("api/issue/cancel-order", issue);
-        await FetchOrderList();
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Put, "api/issue/cancel-order");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(issue), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
+        await FetchIssueList();
     }
 
     /// <summary>
@@ -86,7 +100,12 @@
     /// <param name="issue"> Задание. </param>
     private async Task CompleteOrder(IssueDto issue)
     {
-        await HttpClient.PutAsJsonAsync<IssueDto>("api/issue/completed-order", issue);
-        await FetchOrderList();
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Put, "api/issue/completed-order");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(issue), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
+        await FetchIssueList();
     }
 }

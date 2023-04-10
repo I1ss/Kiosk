@@ -1,5 +1,6 @@
 ﻿@page "/categories"
 @inject HttpClient HttpClient
+@inject ILocalStorageService LocalStorageService
 
 <PageTitle>Категории</PageTitle>
 <AuthorizeView Roles="Admin,Seller">
@@ -49,16 +50,19 @@
     /// <summary>
     /// Создаваемая категория.
     /// </summary>
-    private CategoryDto _newCategory;
+    private CategoryDto _newCategory = new CategoryDto();
 
     /// <summary>
     /// Инициализация компонента.
     /// </summary>
     /// <remarks> Инициализируются здесь категории. </remarks>
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnInitializedAsync();
+        if (!firstRender)
+            return;
+
         await FetchCategoryList();
+        StateHasChanged();
     }
 
     /// <summary>
@@ -67,7 +71,12 @@
     private async Task FetchCategoryList()
     {
         _newCategory = new CategoryDto();
-        _categories = await HttpClient.GetFromJsonAsync<List<CategoryDto>>("/api/Category/all");
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/Category/all");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        var response = await HttpClient.SendAsync(request);
+        _categories = await response.Content.ReadFromJsonAsync<List<CategoryDto>>();
     }
 
     /// <summary>
@@ -76,7 +85,12 @@
     private async Task AddCategory()
     {
         _newCategory.Brands ??= new List<BrandDto>();
-        await HttpClient.PostAsJsonAsync("/api/Category", _newCategory);
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/Category");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(_newCategory), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
         await FetchCategoryList();
         _newCategory = new CategoryDto();
     }
@@ -88,7 +102,12 @@
     private async Task UpdateCategory(CategoryDto category)
     {
         category.Brands ??= new List<BrandDto>();
-        await HttpClient.PutAsJsonAsync("/api/Category", category);
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Put, "/api/Category");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(category), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
         await FetchCategoryList();
     }
 
@@ -98,7 +117,11 @@
     /// <param name="categoryId"> Идентификатор удаляемой категории. </param>
     private async Task DeleteCategory(int categoryId)
     {
-        var result = await HttpClient.DeleteAsync($"/api/Category/{categoryId}");
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"/api/Category/{categoryId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+
+        var response = await HttpClient.SendAsync(request);
         await FetchCategoryList();
     }
 }

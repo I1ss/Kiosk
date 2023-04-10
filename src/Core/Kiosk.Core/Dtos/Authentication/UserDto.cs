@@ -23,6 +23,11 @@
         public string Password { get; set; }
 
         /// <summary>
+        /// Токен пользователя.
+        /// </summary>
+        public string Token { get; set; }
+
+        /// <summary>
         /// Удалось ли аутентифицироваться?
         /// </summary>
         public bool IsAuthentication { get; set; }

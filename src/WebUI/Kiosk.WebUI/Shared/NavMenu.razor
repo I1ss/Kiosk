@@ -1,5 +1,6 @@
 ﻿@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navManager
+@inject ILocalStorageService LocalStorageService
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -70,6 +71,8 @@
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         await customAuthStateProvider.UpdateAuthenticationState(null);
+        await LocalStorageService.RemoveItem("user");
+
         navManager.NavigateTo("/", true);
     }
 }
