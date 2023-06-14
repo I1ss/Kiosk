@@ -1,0 +1,54 @@
+﻿@page "/product/{productId}"
+@inject HttpClient HttpClient
+@inject ILocalStorageService LocalStorageService
+
+@{
+    // Название файла. Пока шаблон, в дальнейшем будет меняться в зависимости от кода
+    // продукта (по коду будут храниться изображения продуктов в файловом хранилище).
+    var name = "ProductTemplate";
+    // Тип расширения файла.
+    var png = "png";
+}
+
+@if (_product != null)
+{
+    <div class="col-3">
+        <div class="verticalhorizontal">
+            <img src="Images/@name.@png" alt="@_product.ProductName" />
+            <span>
+                <b>@_product.ProductName, Цена: @_product.ProductPrice, Код продукта: @_product.ProductCode</b>
+            </span>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Идентификатор продукта.
+    /// </summary>
+    [Parameter]
+    public string ProductId { get; set; }
+
+    /// <summary>
+    /// Продукт.
+    /// </summary>
+    private ProductDto? _product;
+
+    /// <summary>
+    /// Инициализация компонента.
+    /// </summary>
+    /// <remarks> Инициализируется здесь продукт. </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Product/{ProductId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+
+        var response = await HttpClient.SendAsync(request);
+        _product = await response.Content.ReadFromJsonAsync<ProductDto>();
+        StateHasChanged();
+    }
+}

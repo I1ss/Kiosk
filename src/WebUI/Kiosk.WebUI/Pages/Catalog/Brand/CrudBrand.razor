@@ -1,0 +1,174 @@
+﻿@page "/brands"
+@inject HttpClient HttpClient
+@inject ILocalStorageService LocalStorageService
+
+<PageTitle>Бренды</PageTitle>
+
+<AuthorizeView Roles="Admin,Seller">
+    <Authorized>
+        <h3>Бренды: создание, обновление, удаление.</h3>
+        <div class="row">
+            <div class="col-12 mt-5">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <td>Название</td>
+                                <td>Категория</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (_categories != null && _categories.Count != 0)
+                            {
+                                <datalist id="categoriesList">
+                                    @foreach (var category in _categories)
+                                    {
+                                        <option value="@category.CategoryName" />
+                                    }
+                                </datalist>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="text-center" colspan="5">Нет категорий, для которых можно создавать бренды! Добавьте сначала категории.</td>
+                                </tr>
+                            }
+                            <tr>
+                                <td><input class="form-control" @bind="_newBrand.BrandName" placeholder="Название" /></td>
+                                <td><input @onchange="SetCategoryId" class="form-control" type="text" list="categoriesList" placeholder="Категория"></td>
+                                <td class="pt-3"><a @onclick="AddBrand" href="javascript:void(0)"><i class="oi oi-plus"></i></a></td>
+                                <td></td>
+                            </tr>
+                            @if (_brands != null && _brands.Count != 0)
+                            {
+                                foreach (var brand in _brands)
+                                {
+                                    var categoryName = _categories?.FirstOrDefault(category => category.CategoryId
+                                    .Equals(brand.CategoryId))?.CategoryName;
+                                    <BrandRecord Categories="_categories" CategoryName="@categoryName" Brand="brand" UpdateBrand="UpdateBrand" DeleteBrand="DeleteBrand" />
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="text-center" colspan="5">Нет брендов для отображения.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <h1>К сожалению, у вас нет доступа к этой странице.</h1>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    /// <summary>
+    /// Категории.
+    /// </summary>
+    private List<CategoryDto>? _categories;
+
+    /// <summary>
+    /// Бренды.
+    /// </summary>
+    private List<BrandDto>? _brands;
+
+    /// <summary>
+    /// Создаваемый бренд.
+    /// </summary>
+    private BrandDto _newBrand = new BrandDto();
+
+    /// <summary>
+    /// Инициализация компонента.
+    /// </summary>
+    /// <remarks> Инициализируются здесь бренды и категории. </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await FetchBrandList();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Инициализация брендов.
+    /// </summary>
+    private async Task FetchBrandList()
+    {
+        _newBrand = new BrandDto();
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/Brand/all");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        var responseBrands = await HttpClient.SendAsync(request);
+        _brands = await responseBrands.Content.ReadFromJsonAsync<List<BrandDto>>();
+
+        request = new HttpRequestMessage(HttpMethod.Get, "/api/Category/all");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        var responseCategories = await HttpClient.SendAsync(request);
+        _categories = await responseCategories.Content.ReadFromJsonAsync<List<CategoryDto>>();
+    }
+
+    /// <summary>
+    /// Добавление бренда.
+    /// </summary>
+    private async Task AddBrand()
+    {
+        _newBrand.Products ??= new List<ProductDto>();
+        var categoryId = _newBrand.CategoryId;
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/Brand");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(_newBrand), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
+        await FetchBrandList();
+        _newBrand = new BrandDto { CategoryId = categoryId };
+    }
+
+    /// <summary>
+    /// Обновление бренда.
+    /// </summary>
+    /// <param name="brand"> Существующий бренд. </param>
+    private async Task UpdateBrand(BrandDto brand)
+    {
+        brand.Products ??= new List<ProductDto>();
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Put, "/api/Brand");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(brand), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
+        await FetchBrandList();
+    }
+
+    /// <summary>
+    /// Удаление бренда.
+    /// </summary>
+    /// <param name="brandId"> Идентификатор бренда. </param>
+    private async Task DeleteBrand(int brandId)
+    {
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"/api/Brand/{brandId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+
+        var response = await HttpClient.SendAsync(request);
+        await FetchBrandList();
+    }
+
+    /// <summary>
+    /// Установить идентификатор категории по имени.
+    /// </summary>
+    /// <param name="args"> Имя. </param>
+    private void SetCategoryId(ChangeEventArgs args)
+    {
+        var categoryName = args?.Value?.ToString();
+        _newBrand.CategoryId = _categories?.FirstOrDefault(category => category.CategoryName.Equals(categoryName))?.CategoryId ?? 0;
+    }
+}

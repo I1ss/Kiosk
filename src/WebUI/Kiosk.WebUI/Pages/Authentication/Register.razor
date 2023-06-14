@@ -1,0 +1,72 @@
+﻿@page "/register"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILocalStorageService LocalStorageService
+
+<PageTitle>Зарегистрироваться</PageTitle>
+
+<h3>Зарегистрироваться в системе</h3>
+
+<datalist id="userRoles">
+    @foreach (var deliveryType in Enum.GetValues(typeof(UserRoleEnum)))
+    {
+        <option value="@deliveryType" />
+    }
+</datalist>
+
+<div class="row">
+    <div class="col-12 mt-5">
+        <input class="form-control" @bind="_user.Name" placeholder="Логин" />
+        <input class="form-control" @bind="_user.Password" placeholder="Пароль" />
+        <input class="form-control" @onchange="SetUserRole" type="text" list="userRoles" placeholder="Роль">
+        <div>
+            <button class="btn btn-success" @onclick="async () => { await RegisterUser(); }">Зарегистрироваться</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Создаваемый пользователь.
+    /// </summary>
+    private UserDto _user;
+
+    /// <summary>
+    /// Инициализация компонента.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        _user = new UserDto { Token = string.Empty };
+        await base.OnInitializedAsync();
+    }
+
+    /// <summary>
+    /// Зарегистрировать пользователя.
+    /// </summary>
+    private async Task RegisterUser()
+    {
+        var response = await HttpClient.PostAsJsonAsync("/api/User/register", _user);
+        var user = await response.Content.ReadFromJsonAsync<UserDto>();
+
+        if (user?.IsAuthentication != true)
+            return;
+
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(user);
+        await LocalStorageService.SetItem("user", user);
+
+        NavigationManager.NavigateTo("/", true);
+    }
+
+    /// <summary>
+    /// Установить роль пользователю по строке.
+    /// </summary>
+    /// <param name="args"> Роль. </param>
+    private void SetUserRole(ChangeEventArgs args)
+    {
+        var userRoleArgs = args?.Value?.ToString();
+        Enum.TryParse(userRoleArgs, out UserRoleEnum userRole);
+        _user.Role = userRole;
+    }
+}

@@ -1,0 +1,176 @@
+﻿@page "/products"
+@inject HttpClient HttpClient
+@inject ILocalStorageService LocalStorageService
+
+<PageTitle>Продукты</PageTitle>
+
+<AuthorizeView Roles="Admin,Seller">
+    <Authorized>
+        <h3>Продукты: создание, обновление, удаление.</h3>
+
+        <div class="row">
+            <div class="col-12 mt-5">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <td>Название</td>
+                                <td>Код</td>
+                                <td>Цена</td>
+                                <td>Бренд</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (_brands != null && _brands.Count != 0)
+                            {
+                                <datalist id="brandList">
+                                    @foreach (var brand in _brands)
+                                    {
+                                        <option value="@brand.BrandName" />
+                                    }
+                                </datalist>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="text-center" colspan="5">Нет брендов для создания к ним продуктов! Добавьте сначала бренды.</td>
+                                </tr>
+                            }
+                            <tr>
+                                <td><input class="form-control" @bind="_newProduct.ProductName" placeholder="Название" /></td>
+                                <td><input class="form-control" @bind="_newProduct.ProductCode" placeholder="Код" /></td>
+                                <td><input class="form-control" @bind="_newProduct.ProductPrice" /></td>
+                                <td><input @onchange="SetBrandId" class="form-control" type="text" list="brandList" placeholder="Бренд"></td>
+                                <td class="pt-3"><a @onclick="AddProduct" href="javascript:void(0)"><i class="oi oi-plus"></i></a></td>
+                                <td></td>
+                            </tr>
+                            @if (_products != null && _products.Count != 0)
+                            {
+                                foreach (var product in _products)
+                                {
+                                    var brandName = _brands.FirstOrDefault(brand => brand.BrandId.Equals(product.BrandId)).BrandName;
+                                    <ProductRecord Product="product" Brands="_brands" BrandName="@brandName" UpdateProduct="UpdateProduct" DeleteProduct="DeleteProduct" />
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="text-center" colspan="5">Нет продуктов для отображения.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <h1>К сожалению, у вас нет доступа к этой странице.</h1>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    /// <summary>
+    /// Продукты.
+    /// </summary>
+    private List<ProductDto>? _products;
+
+    /// <summary>
+    /// Бренды.
+    /// </summary>
+    private List<BrandDto>? _brands;
+
+    /// <summary>
+    /// Создаваемый продукт.
+    /// </summary>
+    private ProductDto _newProduct = new ProductDto();
+
+    /// <summary>
+    /// Инициализация компонента.
+    /// </summary>
+    /// <remarks> Инициализируются здесь бренды и продукты. </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await FetchProductList();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Инициализация продуктов.
+    /// </summary>
+    private async Task FetchProductList()
+    {
+        _newProduct = new ProductDto();
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/Brand/all");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        var responseBrands = await HttpClient.SendAsync(request);
+        _brands = await responseBrands.Content.ReadFromJsonAsync<List<BrandDto>>();
+
+        request = new HttpRequestMessage(HttpMethod.Get, "/api/Product/all");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        var responseCategories = await HttpClient.SendAsync(request);
+        _products = await responseCategories.Content.ReadFromJsonAsync<List<ProductDto>>();
+    }
+
+    /// <summary>
+    /// Создать продукт.
+    /// </summary>
+    private async Task AddProduct()
+    {
+        var brandId = _newProduct.BrandId;
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/Product");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(_newProduct), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
+        await FetchProductList();
+        _newProduct = new ProductDto { BrandId = brandId };
+    }
+
+    /// <summary>
+    /// Обновление продукта.
+    /// </summary>
+    /// <param name="product"> Обновляемые продукт. </param>
+    private async Task UpdateProduct(ProductDto product)
+    {
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Put, "/api/Product");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+        request.Content = new StringContent(JsonSerializer.Serialize(product), Encoding.UTF8, "application/json");
+
+        var response = await HttpClient.SendAsync(request);
+        await FetchProductList();
+    }
+
+    /// <summary>
+    /// Удаление продукта.
+    /// </summary>
+    /// <param name="productId"> Идентификатор продукта. </param>
+    private async Task DeleteProduct(int productId)
+    {
+        var user = await LocalStorageService.GetItem<UserDto>("user");
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"/api/Product/{productId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
+
+        var response = await HttpClient.SendAsync(request);
+        await FetchProductList();
+    }
+
+    /// <summary>
+    /// Установить идентификатор бренда по имени.
+    /// </summary>
+    /// <param name="args"> Имя. </param>
+    private void SetBrandId(ChangeEventArgs args)
+    {
+        var brandName = args?.Value?.ToString();
+        _newProduct.BrandId = _brands?.FirstOrDefault(brand => brand.BrandName.Equals(brandName))?.BrandId ?? 0;
+    }
+}

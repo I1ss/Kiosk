@@ -1,0 +1,27 @@
+name: Tests for Kiosk app
+
+on:
+  push:
+    branches: [ Dev ]
+  pull_request:
+    branches: [ Dev ]
+
+jobs:
+  kiosk-catalog-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.1.0
+    - run: dotnet test
+      working-directory: src/Tests/Kiosk.Catalog.Tests
+  kiosk-order-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.1.0
+    - run: dotnet test
+      working-directory: src/Tests/Kiosk.Order.Tests
+  kiosk-delivery-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.1.0
+    - run: dotnet test
+      working-directory: src/Tests/Kiosk.Delivery.Tests
