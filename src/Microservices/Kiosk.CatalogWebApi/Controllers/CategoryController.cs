@@ -11,7 +11,6 @@
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,Seller")]
     public class CategoryController : ControllerBase
     {
         /// <summary>
@@ -39,6 +38,7 @@
         [HttpGet("{categoryId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<CategoryDto> GetCategory(int categoryId)
         {
             var category = await _categoryRepository.GetCategory(categoryId);
@@ -55,6 +55,7 @@
         [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IEnumerable<CategoryDto>> GetCategories()
         {
             var categories = await _categoryRepository.GetCategories();
@@ -71,6 +72,7 @@
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IActionResult> CreateCategory([FromBody]CategoryDto category)
         {
             await _categoryRepository.CreateCategory(category);
@@ -87,6 +89,7 @@
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IActionResult> UpdateCategory([FromBody]CategoryDto category)
         {
             await _categoryRepository.UpdateCategory(category);
@@ -103,6 +106,7 @@
         [HttpDelete("{categoryId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IActionResult> DeleteCategory(int categoryId)
         {
             await _categoryRepository.DeleteCategory(categoryId);

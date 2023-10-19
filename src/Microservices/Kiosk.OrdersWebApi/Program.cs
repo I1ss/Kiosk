@@ -49,6 +49,12 @@ builder.Services.AddMassTransit(options =>
 {
     options.AddBus(context => Bus.Factory.CreateUsingRabbitMq(configuration =>
     {
+        configuration.Host("45.140.19.120", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
         configuration.ReceiveEndpoint("Orders", e =>
         {
             e.ConfigureConsumer(context, typeof(UpdateOrderConsumer));

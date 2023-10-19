@@ -11,7 +11,6 @@
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,Seller")]
     public class BrandController : ControllerBase
     {
         /// <summary>
@@ -39,6 +38,7 @@
         [HttpGet("{brandId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<BrandDto> GetBrand(int brandId)
         {
             var brand = await _brandRepository.GetBrand(brandId);
@@ -55,6 +55,7 @@
         [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IEnumerable<BrandDto>> GetBrands()
         {
             var brands = await _brandRepository.GetBrands();
@@ -71,6 +72,7 @@
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IActionResult> CreateBrand([FromBody]BrandDto brand)
         {
             await _brandRepository.CreateBrand(brand);
@@ -87,6 +89,7 @@
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IActionResult> UpdateBrand([FromBody]BrandDto brand)
         {
             await _brandRepository.UpdateBrand(brand);
@@ -103,6 +106,7 @@
         [HttpDelete("{brandId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Authorize(Roles = "Admin,Seller")]
         public async Task<IActionResult> DeleteBrand(int brandId)
         {
             await _brandRepository.DeleteBrand(brandId);
