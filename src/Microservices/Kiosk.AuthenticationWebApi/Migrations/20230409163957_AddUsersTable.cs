@@ -25,6 +25,8 @@ namespace Kiosk.AuthenticationWebApi.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.User_Id);
                 });
+
+            migrationBuilder.Sql("INSERT INTO \"Users\" (\"User_Name\", \"User_Password\", \"User_Role\") VALUES ('Admin', 'c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f', 3)");
         }
 
         /// <inheritdoc />
