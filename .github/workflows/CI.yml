@@ -38,5 +38,4 @@ jobs:
             cd /home/${{ secrets.SSH_USER }}/Kiosk
             git fetch --all
             git reset --hard origin/main
-            cd ..
             docker-compose up --build -d
