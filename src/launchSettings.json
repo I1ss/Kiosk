@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "kiosk.apigateway": "StartDebugging",
+        "kiosk.authenticationwebapi": "StartDebugging",
+        "kiosk.catalogwebapi": "StartDebugging",
+        "kiosk.deliverywebapi": "StartDebugging",
+        "kiosk.orderswebapi": "StartDebugging",
+        "kiosk.webui": "StartDebugging"
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  kiosk.apigateway:
+    image: ${DOCKER_REGISTRY-}kioskapigateway
+    build:
+      context: .
+      dockerfile: ApiGateway/Kiosk.ApiGateway/Dockerfile
+
+  kiosk.authenticationwebapi:
+    image: ${DOCKER_REGISTRY-}kioskauthenticationwebapi
+    build:
+      context: .
+      dockerfile: Microservices/Kiosk.AuthenticationWebApi/Dockerfile
+
+
+  kiosk.catalogwebapi:
+    image: ${DOCKER_REGISTRY-}kioskcatalogwebapi
+    build:
+      context: .
+      dockerfile: Microservices/Kiosk.CatalogWebApi/Dockerfile
+
+
+  kiosk.deliverywebapi:
+    image: ${DOCKER_REGISTRY-}kioskdeliverywebapi
+    build:
+      context: .
+      dockerfile: Microservices/Kiosk.DeliveryWebApi/Kiosk.DeliveryWebApi/Dockerfile
+
+
+  kiosk.orderswebapi:
+    image: ${DOCKER_REGISTRY-}kioskorderswebapi
+    build:
+      context: .
+      dockerfile: Microservices/Kiosk.OrdersWebApi/Dockerfile
+
+
+  kiosk.webui:
+    image: ${DOCKER_REGISTRY-}kioskwebui
+    build:
+      context: .
+      dockerfile: WebUI/Kiosk.WebUI/Dockerfile
+
