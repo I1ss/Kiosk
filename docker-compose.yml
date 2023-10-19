@@ -1,0 +1,84 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: kiosk-postgres
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+    ports:
+      - "9595:5432"
+    networks:
+      - kiosk-network
+
+  rabbitmq:
+    image: "rabbitmq:management"
+    container_name: kiosk-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - kiosk-network
+
+  api-gateway:
+    build:
+      context: ./src
+      dockerfile: ApiGateway/Kiosk.ApiGateway/Dockerfile
+    container_name: kiosk-api-gateway
+    ports:
+      - "80:80"
+    depends_on:
+      - rabbitmq
+    networks:
+      - kiosk-network
+
+  authentication-webapi:
+    build:
+      context: ./src
+      dockerfile: Microservices/Kiosk.AuthenticationWebApi/Dockerfile
+    container_name: kiosk-authentication-webapi
+    ports:
+      - "5102:5102"
+    depends_on:
+      - rabbitmq
+    networks:
+      - kiosk-network
+
+  catalog-webapi:
+    build:
+      context: ./src
+      dockerfile: Microservices/Kiosk.CatalogWebApi/Dockerfile
+    container_name: kiosk-catalog-webapi
+    ports:
+      - "7247:7247"
+    depends_on:
+      - rabbitmq
+    networks:
+      - kiosk-network
+
+  delivery-webapi:
+    build:
+      context: ./src
+      dockerfile: Microservices/Kiosk.DeliveryWebApi/Kiosk.DeliveryWebApi/Dockerfile
+    container_name: kiosk-delivery-webapi
+    ports:
+      - "5188:5188"
+    depends_on:
+      - rabbitmq
+    networks:
+      - kiosk-network
+
+  orders-webapi:
+    build:
+      context: ./src
+      dockerfile: Microservices/Kiosk.OrdersWebApi/Dockerfile
+    container_name: kiosk-orders-webapi
+    ports:
+      - "5007:5007"
+    depends_on:
+      - rabbitmq
+    networks:
+      - kiosk-network
+
+networks:
+  kiosk-network:
