@@ -25,3 +25,22 @@ jobs:
     - uses: actions/checkout@v2.1.0
     - run: dotnet test
       working-directory: src/Tests/Kiosk.Delivery.Tests
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /home/${{ secrets.SSH_USER }}/Kiosk
+            git fetch --all
+            git reset --hard origin/main
+            cd ..
+            docker-compose up --build -d
