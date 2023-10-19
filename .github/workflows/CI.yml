@@ -1,10 +1,6 @@
 name: Tests for Kiosk app
 
-on:
-  push:
-    branches: [ Dev ]
-  pull_request:
-    branches: [ Dev ]
+on: [push, pull_request]
 
 jobs:
   kiosk-catalog-tests:
